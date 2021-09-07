@@ -19,7 +19,7 @@ firewall: armv7-chroot armv7-keys
 	$(WORK_DIR)/armv7/enter-chroot \
 		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
 		--arch armv7 \
-		--profile rpi_fw \
+		--profile rpi_firewall \
 		--outdir $(abspath $(WORK_DIR))/shared \
 		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main
 	$(WORK_DIR)/armv7/destroy --remove
