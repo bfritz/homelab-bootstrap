@@ -26,6 +26,7 @@ configure_installed_packages() {
 		wireguard-tools-wg \
 		ulogd-json \
 		ulogd-openrc \
+		gomplate \
 
 }
 
@@ -84,6 +85,31 @@ EOF
 	add_vlan_interface 18 ; add_vlan_dns_and_dhcp 18 k8s 0
 }
 
+configure_wireguard() {
+	mkdir -p "$tmp"/etc/wireguard
+	makefile root:root 0600 "$tmp"/etc/wireguard/wg0.conf.in <<EOF
+[Interface]
+PrivateKey={{ .vpn.wg0.private_key }}
+
+[Peer]
+PublicKey={{ .vpn.wg0.public_key }}
+PresharedKey={{ .vpn.wg0.preshared_key }}
+Endpoint={{ .vpn.ext_ip }}:51820
+PersistentKeepalive=25
+AllowedIPs=0.0.0.0/0, ::/0
+EOF
+
+	makefile root:root 0600 "$tmp"/etc/network/interfaces.wg0.in <<EOF
+
+auto wg0
+iface wg0 inet static
+	requires eth0.10
+	use wireguard
+	address {{ .vpn.int_ip }}
+	netmask {{ .vpn.int_mask }}
+EOF
+}
+
 configure_init_scripts() {
 	rc_add devfs sysinit
 	rc_add dmesg sysinit
@@ -111,6 +137,36 @@ configure_init_scripts() {
 	rc_add dnsmasq default
 }
 
+add_customize_image_init_script() {
+	mkdir -p "$tmp"/etc/init.d
+	makefile root:root 0755 "$tmp"/etc/init.d/customize_image <<EOF
+#!/sbin/openrc-run
+
+conf=/media/mmcblk0p1/config.yaml
+
+start() {
+	ebegin "Expanding templates"
+	if ! command -v gomplate > /dev/null; then
+		eend 1 "gomplate command is missing"
+		return 1
+	fi
+	if [ ! -e "\$conf" ]; then
+		eend 1 "template values not present at \$conf"
+		return 1
+	fi
+
+	gomplate -c .="\$conf" -f /etc/wireguard/wg0.conf.in > /etc/wireguard/wg0.conf \
+		&& rm /etc/wireguard/wg0.conf.in
+
+	gomplate -c .="\$conf" -f /etc/network/interfaces.wg0.in >> /etc/network/interfaces \
+		&& rm /etc/network/interfaces.wg0.in
+
+	eend 0
+}
+EOF
+	rc_add customize_image boot
+}
+
 tmp="$(mktemp -d)"
 trap cleanup EXIT
 
@@ -120,9 +176,11 @@ rpi-fw
 EOF
 
 configure_network
+configure_wireguard
 configure_installed_packages
 add_ssh_key
 configure_init_scripts
+add_customize_image_init_script
 install_overlays
 
 echo "Creating overlay file $hostname.apkovl.tar.gz ..."

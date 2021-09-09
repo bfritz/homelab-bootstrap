@@ -23,7 +23,8 @@ firewall: armv7-chroot armv7-build-user # armv7-chroot-initramfs-hack
 		--arch armv7 \
 		--profile rpi_firewall \
 		--outdir $(abspath $(WORK_DIR))/shared \
-		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main
+		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
+		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
 	$(WORK_DIR)/armv7/destroy --remove
 
 armv7-chroot: clone-aci populate-shared
