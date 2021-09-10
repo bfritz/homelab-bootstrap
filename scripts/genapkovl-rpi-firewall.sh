@@ -5,13 +5,12 @@ hostname="$1"
 source "$(dirname "$0")/shared.sh"
 
 add_ssh_key() {
-	mkdir -p --mode=700 "$tmp"/root
+	[ -d "$tmp"/root ] || mkdir --mode=0700 "$tmp"/root
 	if [ -n "$HL_SSH_KEY_URL" ]; then
-		mkdir -p "$tmp"/root/.ssh
-		chmod 700 "$tmp"/root/.ssh
+		mkdir --mode=0700 "$tmp"/root/.ssh
 
 		curl -o "$tmp"/root/.ssh/authorized_keys "$HL_SSH_KEY_URL"
-		chmod 400 "$tmp"/root/.ssh/authorized_keys
+		chmod 0400 "$tmp"/root/.ssh/authorized_keys
 	fi
 }
 
@@ -43,47 +42,47 @@ EOF
 }
 
 add_vlan_dns_and_dhcp() {
-	VLAN_ID="$1"
-	VLAN_NAME="$2"
-	FILE=$(printf "%03d_%s.conf" $((VLAN_ID * 10)) "$VLAN_NAME")
+	vlan_id="$1"
+	vlan_name="$2"
+	enable_dhcp="${3:-1}"
+	file=$(printf "%03d_%s.conf" $((vlan_id * 10)) "$vlan_name")
+
 	mkdir -p "$tmp"/etc/dnsmasq.d
-	cat >> "$tmp/etc/dnsmasq.d/$FILE" <<EOF
-interface=eth0.$VLAN_ID
+	cat >> "$tmp/etc/dnsmasq.d/$file" <<EOF
+interface=eth0.$vlan_id
 bind-interfaces
 EOF
 
-if [ "$VLAN_NAME" != "mgmt" ] && [ "$VLAN_NAME" != "k8s" ]; then
-	cat >> "$tmp/etc/dnsmasq.d/$FILE" <<EOF
+if [ "$enable_dhcp" = "1" ]; then
+	cat >> "$tmp/etc/dnsmasq.d/$file" <<EOF
 
-dhcp-range=172.22.$VLAN_ID.100,172.22.$VLAN_ID.149,12h
+dhcp-range=172.22.$vlan_id.100,172.22.$vlan_id.149,12h
 EOF
 fi
 }
 
 
-add_vlan() {
-	VLAN_ID="$1"
-	VLAN_NAME="$2"
-	add_vlan_interface "$VLAN_ID"
-	add_vlan_dns_and_dhcp "$VLAN_ID" "$VLAN_NAME"
-}
-
 configure_network() {
 	mkdir -p "$tmp"/etc/network
 	makefile root:root 0644 "$tmp"/etc/network/interfaces <<EOF
+# ifupdown-ng syntax
+# See https://github.com/ifupdown-ng/ifupdown-ng
+
 auto lo
-iface lo inet loopback
+iface lo
+	use loopback
 
 auto eth0.10
-iface eth0.10 inet dhcp
+iface eth0.10
+	use dhcp
 EOF
 
-	add_vlan 1 loc
-	add_vlan 2 dmz
-	add_vlan 3 swif
-	add_vlan 4 gwif
-	add_vlan 13 mgmt
-	add_vlan 18 k8s
+	add_vlan_interface  1 ; add_vlan_dns_and_dhcp  1 loc
+	add_vlan_interface  2 ; add_vlan_dns_and_dhcp  2 dmz 0
+	add_vlan_interface  3 ; add_vlan_dns_and_dhcp  3 swif
+	add_vlan_interface  4 ; add_vlan_dns_and_dhcp  4 gwif
+	add_vlan_interface 13 ; add_vlan_dns_and_dhcp 13 mgmt 0
+	add_vlan_interface 18 ; add_vlan_dns_and_dhcp 18 k8s 0
 }
 
 configure_init_scripts() {
