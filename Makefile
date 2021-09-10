@@ -16,6 +16,7 @@ endif
 build-images: firewall
 
 firewall: armv7-chroot armv7-keys
+	HL_OVERLAY_DIR=$(abspath $(WORK_DIR))/shared/overlays \
 	$(WORK_DIR)/armv7/enter-chroot \
 		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
 		--arch armv7 \
@@ -27,8 +28,9 @@ firewall: armv7-chroot armv7-keys
 armv7-chroot: clone-aci populate-shared
 	sudo $(WORK_DIR)/aci/alpine-chroot-install \
 		-a armv7 \
-		-i $(abspath $(WORK_DIR))/shared \
 		-d $(abspath $(WORK_DIR))/armv7 \
+		-i $(abspath $(WORK_DIR))/shared \
+		-k "ARCH CI QEMU_EMULATOR HL_.*" \
 		-p "abuild apk-tools alpine-conf busybox fakeroot sudo"
 
 armv7-keys: armv7-chroot

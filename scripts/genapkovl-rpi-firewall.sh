@@ -112,5 +112,7 @@ configure_network
 configure_installed_packages
 add_ssh_key
 configure_init_scripts
+install_overlays
 
+echo "Creating overlay file $hostname.apkovl.tar.gz ..."
 tar -C "$tmp" -c etc root | gzip -9n > "$hostname.apkovl.tar.gz"
