@@ -15,7 +15,7 @@ add_ssh_key() {
 }
 
 configure_installed_packages() {
-	apk_add alpine-base awall dnsmasq iproute2 iptables openssh-server wireguard-tools-wg ulogd-json ulogd-openrc vlan
+	apk_add chrony openssh-server prometheus-node-exporter awall dnsmasq iproute2 iptables openssh-server wireguard-tools-wg ulogd-json ulogd-openrc vlan
 }
 
 add_vlan_interface() {
@@ -93,6 +93,9 @@ configure_init_scripts() {
 	rc_add savecache shutdown
 
 	# additional services
+	rc_add chronyd default
+	rc_add sshd default
+	rc_add node-exporter default
 	rc_add awall default
 	rc_add dnsmasq default
 }
