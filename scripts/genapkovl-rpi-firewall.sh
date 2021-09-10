@@ -15,19 +15,7 @@ add_ssh_key() {
 }
 
 configure_installed_packages() {
-	mkdir -p "$tmp"/etc/apk
-	makefile root:root 0644 "$tmp"/etc/apk/world <<EOF
-alpine-base
-awall
-dnsmasq
-iproute2
-iptables
-openssh-server
-wireguard-tools-wg
-ulogd-json
-ulogd-openrc
-vlan
-EOF
+	apk_add alpine-base awall dnsmasq iproute2 iptables openssh-server wireguard-tools-wg ulogd-json ulogd-openrc vlan
 }
 
 add_vlan_interface() {
