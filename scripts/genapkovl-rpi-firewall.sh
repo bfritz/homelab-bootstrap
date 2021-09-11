@@ -15,7 +15,7 @@ add_ssh_key() {
 }
 
 configure_installed_packages() {
-	apk_add chrony openssh-server prometheus-node-exporter awall dnsmasq iproute2 iptables openssh-server wireguard-tools-wg ulogd-json ulogd-openrc vlan
+	apk_add chrony openssh-server prometheus-node-exporter awall dnsmasq iproute2 iptables openssh-server wireguard-tools-wg ulogd-json ulogd-openrc
 }
 
 add_vlan_interface() {
