@@ -16,7 +16,7 @@ endif
 
 build-images: firewall
 
-firewall: armv7-chroot armv7-build-user
+firewall: armv7-chroot armv7-build-user # armv7-chroot-initramfs-hack
 	HL_OVERLAY_DIR=$(abspath $(WORK_DIR))/shared/overlays \
 	$(WORK_DIR)/armv7/enter-chroot -u $(BUILD_USER) \
 		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
@@ -67,3 +67,12 @@ clone-aports:
 ifeq ($(wildcard $(WORK_DIR)/shared/aports/.git),)
 	git clone --depth 1 $(APORTS_REPO) $(WORK_DIR)/shared/aports
 endif
+
+# Insert `--allow-untrusted` into the init script used to boostrap the live system
+# from the initramfs.  Useful for debugging errors...like why `/etc/inittab` is missing.
+# (See previous commits.)
+armv7-chroot-initramfs-hack:
+	$(WORK_DIR)/armv7/enter-chroot \
+		sed -i 's/^apkflags="\(.*\)"/apkflages="--allow-untrusted \1"/' /usr/share/mkinitfs/initramfs-init
+	$(WORK_DIR)/armv7/enter-chroot \
+		grep '^apk' /usr/share/mkinitfs/initramfs-init
