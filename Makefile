@@ -33,7 +33,7 @@ armv7-chroot: clone-aci populate-shared
 		-d $(abspath $(WORK_DIR))/armv7 \
 		-i $(abspath $(WORK_DIR))/shared \
 		-k "ARCH CI QEMU_EMULATOR HL_.*" \
-		-p "abuild apk-tools alpine-conf busybox fakeroot sudo"
+		-p "abuild apk-tools alpine-conf busybox fakeroot sudo squashfs-tools mkinitfs"
 
 armv7-build-user: armv7-chroot
 	# add non-root user to build images
