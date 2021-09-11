@@ -105,7 +105,7 @@ trap cleanup EXIT
 
 mkdir -p "$tmp"/etc
 makefile root:root 0644 "$tmp"/etc/hostname <<EOF
-$hostname
+rpi-fw
 EOF
 
 configure_network

@@ -19,5 +19,4 @@ profile_rpi_firewall() {
 	kernel_cmdline="console=tty1 console=ttyAMA0 $CMDLINE_EXTRA"
 	apks="$apks chrony openssh-server prometheus-node-exporter awall dnsmasq iproute2 iptables ulogd-json ulogd-openrc vlan wireguard-tools-wg"
 	apkovl="genapkovl-rpi-firewall.sh"
-	hostname="rpi-fw"
 }
