@@ -137,34 +137,63 @@ configure_init_scripts() {
 	rc_add dnsmasq default
 }
 
-add_customize_image_init_script() {
+add_customize_image_init_scripts() {
 	mkdir -p "$tmp"/etc/init.d
 	makefile root:root 0755 "$tmp"/etc/init.d/customize_image <<EOF
 #!/sbin/openrc-run
 
+description="First boot image customization"
+
 conf=/media/mmcblk0p1/config.yaml
 
 start() {
-	ebegin "Expanding templates"
-	if ! command -v gomplate > /dev/null; then
-		eend 1 "gomplate command is missing"
-		return 1
-	fi
+	ebegin "Check if config present and template expansion possible"
 	if [ ! -e "\$conf" ]; then
 		eend 1 "template values not present at \$conf"
 		return 1
 	fi
+	if ! command -v gomplate > /dev/null; then
+		eend 1 "gomplate command is missing"
+		return 1
+	fi
+	eend 0
 
+	ebegin "Expanding wireguard templates"
 	gomplate -c .="\$conf" -f /etc/wireguard/wg0.conf.in > /etc/wireguard/wg0.conf \
 		&& rm /etc/wireguard/wg0.conf.in
 
 	gomplate -c .="\$conf" -f /etc/network/interfaces.wg0.in >> /etc/network/interfaces \
 		&& rm /etc/network/interfaces.wg0.in
+	eend \$?
 
-	eend 0
+	ebegin "Deleting \$conf"
+	mount -o remount,rw "\$(dirname \$conf)"
+        rm \$conf
+	eend \$?
+	mount -o remount,ro "\$(dirname \$conf)"
 }
 EOF
 	rc_add customize_image boot
+
+	makefile root:root 0755 "$tmp"/etc/init.d/customize_image_save <<EOF
+#!/sbin/openrc-run
+
+description="First boot image customization - save with lbu commit"
+
+depend() {
+	# prefer to wait until sshd is running to backup host keys
+	use sshd
+}
+
+start() {
+	ebegin "Saving updates"
+	rc-update del customize_image boot
+	rc-update del customize_image_save default
+	lbu commit -d mmcblk0p1
+	eend $?
+}
+EOF
+	rc_add customize_image_save default
 }
 
 tmp="$(mktemp -d)"
@@ -180,7 +209,7 @@ configure_wireguard
 configure_installed_packages
 add_ssh_key
 configure_init_scripts
-add_customize_image_init_script
+add_customize_image_init_scripts
 install_overlays
 
 echo "Creating overlay file $hostname.apkovl.tar.gz ..."
