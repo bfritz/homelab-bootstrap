@@ -130,6 +130,8 @@ configure_init_scripts() {
 	rc_add savecache shutdown
 
 	# additional services
+	rc_add iptables default
+	rc_add ip6tables default
 	rc_add chronyd default
 	rc_add sshd default
 	rc_add node-exporter default
@@ -145,6 +147,10 @@ add_customize_image_init_scripts() {
 description="First boot image customization"
 
 conf=/media/mmcblk0p1/config.yaml
+
+depend() {
+	before iptables ip6tables
+}
 
 start() {
 	ebegin "Check if config present and template expansion possible"
@@ -164,6 +170,10 @@ start() {
 
 	gomplate -c .="\$conf" -f /etc/network/interfaces.wg0.in >> /etc/network/interfaces \
 		&& rm /etc/network/interfaces.wg0.in
+	eend \$?
+
+	ebegin "Translating awall configuration into iptables rules"
+	awall translate
 	eend \$?
 
 	ebegin "Deleting \$conf"
