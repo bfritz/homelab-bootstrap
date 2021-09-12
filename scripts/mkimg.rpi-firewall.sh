@@ -17,6 +17,17 @@ section_rpi_firewall_usercfg() {
 profile_rpi_firewall() {
 	profile_rpi
 	kernel_cmdline="console=tty1 console=ttyAMA0 $CMDLINE_EXTRA"
-	apks="$apks chrony openssh-server prometheus-node-exporter awall dnsmasq iproute2 iptables ulogd-json ulogd-openrc wireguard-tools-wg"
+	apks="$apks
+        chrony
+        openssh-server
+        prometheus-node-exporter
+        awall
+        dnsmasq
+        iproute2
+        iptables
+        ulogd-json
+        ulogd-openrc
+        wireguard-tools-wg
+"
 	apkovl="genapkovl-rpi-firewall.sh"
 }
