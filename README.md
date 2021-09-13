@@ -1,4 +1,4 @@
-# bfritz Homelab Bootstrap
+# bfritz homelab bootstrap scripts
 
 Build scripts that use [qemu] and [alpine-chroot-install] to create custom
 Alpine images that run from RAM.  Images will include:
