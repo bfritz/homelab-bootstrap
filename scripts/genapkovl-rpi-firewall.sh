@@ -134,12 +134,9 @@ configure_init_scripts() {
 	rc_add savecache shutdown
 
 	# additional services
-	rc_add iptables default
-	rc_add ip6tables default
 	rc_add chronyd default
 	rc_add sshd default
 	rc_add node-exporter default
-	rc_add awall default
 	rc_add dnsmasq default
 }
 
