@@ -107,6 +107,10 @@ iface wg0 inet static
 	use wireguard
 	address {{ .vpn.int_ip }}
 	netmask {{ .vpn.int_mask }}
+        # send DNS traffic over VPN
+        post-up ip -4 route add 1.1.1.1 dev wg0
+        post-up ip -4 route add 8.8.8.8 dev wg0
+        post-up ip -4 route add 8.8.4.4 dev wg0
 EOF
 }
 
