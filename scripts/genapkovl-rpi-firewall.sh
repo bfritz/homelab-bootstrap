@@ -31,20 +31,22 @@ configure_installed_packages() {
 }
 
 add_vlan_interface() {
-	VLAN_ID="$1"
+	vlan_id="$1"
+	net_prefix="$2"
 	cat >> "$tmp"/etc/network/interfaces <<EOF
 
-auto eth0.$VLAN_ID
-iface eth0.$VLAN_ID inet static
-	address 172.22.$VLAN_ID.1
+auto eth0.$vlan_id
+iface eth0.$vlan_id inet static
+	address $net_prefix.1
 	netmask 255.255.255.0
 EOF
 }
 
 add_vlan_dns_and_dhcp() {
 	vlan_id="$1"
-	vlan_name="$2"
-	enable_dhcp="${3:-1}"
+	net_prefix="$2"
+	vlan_name="$3"
+	enable_dhcp="${4:-1}"
 	file=$(printf "%03d_%s.conf" $((vlan_id * 10)) "$vlan_name")
 
 	mkdir -p "$tmp"/etc/dnsmasq.d
@@ -56,7 +58,7 @@ EOF
 if [ "$enable_dhcp" = "1" ]; then
 	cat >> "$tmp/etc/dnsmasq.d/$file" <<EOF
 
-dhcp-range=172.22.$vlan_id.100,172.22.$vlan_id.149,12h
+dhcp-range=$net_prefix.100,$net_prefix.149,12h
 EOF
 fi
 }
@@ -72,17 +74,17 @@ auto lo
 iface lo
 	use loopback
 
-auto eth0.10
-iface eth0.10
+auto eth0.110
+iface eth0.110
 	use dhcp
 EOF
 
-	add_vlan_interface  1 ; add_vlan_dns_and_dhcp  1 loc
-	add_vlan_interface  2 ; add_vlan_dns_and_dhcp  2 dmz 0
-	add_vlan_interface  3 ; add_vlan_dns_and_dhcp  3 swif
-	add_vlan_interface  4 ; add_vlan_dns_and_dhcp  4 gwif
-	add_vlan_interface 13 ; add_vlan_dns_and_dhcp 13 mgmt 0
-	add_vlan_interface 18 ; add_vlan_dns_and_dhcp 18 k8s 0
+	add_vlan_interface 101 172.22.1  ; add_vlan_dns_and_dhcp 101 172.22.1  loc
+	add_vlan_interface 102 172.22.2  ; add_vlan_dns_and_dhcp 102 172.22.2  dmz 0
+	add_vlan_interface 103 172.22.3  ; add_vlan_dns_and_dhcp 103 172.22.3  swif
+	add_vlan_interface 104 172.22.4  ; add_vlan_dns_and_dhcp 104 172.22.4  gwif
+	add_vlan_interface 113 172.22.13 ; add_vlan_dns_and_dhcp 113 172.22.13 mgmt 0
+	add_vlan_interface 118 172.22.18 ; add_vlan_dns_and_dhcp 118 172.22.18 k8s 0
 }
 
 configure_wireguard() {
@@ -103,7 +105,7 @@ EOF
 
 auto wg0
 iface wg0 inet static
-	requires eth0.10
+	requires eth0.110
 	use wireguard
 	address {{ .vpn.int_ip }}
 	netmask {{ .vpn.int_mask }}
