@@ -113,6 +113,13 @@ iface wg0 inet static
         post-up ip -4 route add 1.1.1.1 dev wg0
         post-up ip -4 route add 8.8.8.8 dev wg0
         post-up ip -4 route add 8.8.4.4 dev wg0
+        post-up sh -c 'grep -q k8s_net /etc/iproute2/rt_tables || echo "118 k8s_net" >> /etc/iproute2/rt_tables'
+        post-up ip -4 rule add iif eth0.118 table k8s_net
+        post-up ip -4 rule add suppress_prefixlength 0 table main
+        post-up ip -4 route add default via {{ .vpn.int_ip }} dev wg0 table k8s_net
+        pre-down ip -4 route flush table k8s_net
+        pre-down ip -4 rule del suppress_prefixlength 0 table main
+        pre-down ip -4 rule del iif eth0.118 table k8s_net
 EOF
 }
 
