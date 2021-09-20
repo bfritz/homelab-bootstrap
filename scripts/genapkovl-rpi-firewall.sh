@@ -202,6 +202,7 @@ start() {
 	ebegin "Saving updates"
 	rc-update del customize_image boot
 	rc-update del customize_image_save default
+	[ -e /root/.ssh/authorized_keys ] && lbu include /root/.ssh/authorized_keys
 	lbu commit -d mmcblk0p1
 	eend $?
 }
