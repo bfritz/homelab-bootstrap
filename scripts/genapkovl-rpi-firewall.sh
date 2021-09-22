@@ -196,6 +196,17 @@ configure_init_scripts() {
 	rc_add dnsmasq default
 }
 
+configure_syslog() {
+	mkdir -p "$tmp"/etc/conf.d
+	makefile root:root 0644 "$tmp"/etc/conf.d/syslog <<EOF
+# -t         Strip client-generated timestamps
+# -s SIZE    Max size (KB) before rotation (default 200KB, 0=off)
+# -b N       N rotated logs to keep (default 1, max 99, 0=purge)
+
+SYSLOGD_OPTS="-t -s 512 -b 10"
+EOF
+}
+
 add_customize_image_init_scripts() {
 	mkdir -p "$tmp"/etc/init.d
 	makefile root:root 0755 "$tmp"/etc/init.d/customize_image <<EOF
@@ -277,6 +288,7 @@ configure_network
 configure_wireguard
 log_martians
 configure_installed_packages
+configure_syslog
 add_ssh_key
 configure_init_scripts
 add_customize_image_init_scripts
