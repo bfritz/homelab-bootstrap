@@ -161,6 +161,15 @@ esac
 EOF
 }
 
+log_martians() {
+	mkdir -p --mode=0700 "$tmp"/etc/sysctl.d
+	makefile root:root 0644 "$tmp"/etc/sysctl.d/log_martians.conf <<EOF
+# https://www.cyberciti.biz/faq/linux-log-suspicious-martian-packets-un-routable-source-addresses/
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.default.log_martians = 1
+EOF
+}
+
 configure_init_scripts() {
 	rc_add devfs sysinit
 	rc_add dmesg sysinit
@@ -266,6 +275,7 @@ EOF
 
 configure_network
 configure_wireguard
+log_martians
 configure_installed_packages
 add_ssh_key
 configure_init_scripts
