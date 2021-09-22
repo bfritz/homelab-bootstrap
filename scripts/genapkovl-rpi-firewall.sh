@@ -113,6 +113,9 @@ iface wg0 inet static
 	post-up ip -4 route add 1.1.1.1 dev wg0
 	post-up ip -4 route add 8.8.8.8 dev wg0
 	post-up ip -4 route add 8.8.4.4 dev wg0
+	# route loc traffic over VPN
+	post-up /usr/local/bin/vpn_routes add loc_net 101 "{{ .vpn.int_ip }}"
+	pre-down /usr/local/bin/vpn_routes del loc_net 101
 	# route k8s traffic over VPN
 	post-up /usr/local/bin/vpn_routes add k8s_net 118 "{{ .vpn.int_ip }}"
 	pre-down /usr/local/bin/vpn_routes del k8s_net 118
