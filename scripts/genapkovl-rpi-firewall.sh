@@ -106,6 +106,9 @@ iface wg0 inet static
 	# route loc traffic over VPN
 	post-up /usr/local/bin/vpn_routes add loc_net 101 "{{ .vpn.int_ip }}"
 	pre-down /usr/local/bin/vpn_routes del loc_net 101
+	# route dmz traffic over VPN
+	post-up /usr/local/bin/vpn_routes add dmz_net 102 "{{ .vpn.int_ip }}"
+	pre-down /usr/local/bin/vpn_routes del dmz_net 102
 	# route k8s traffic over VPN
 	post-up /usr/local/bin/vpn_routes add k8s_net 118 "{{ .vpn.int_ip }}"
 	pre-down /usr/local/bin/vpn_routes del k8s_net 118
