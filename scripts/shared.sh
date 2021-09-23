@@ -39,7 +39,7 @@ add_ssh_key() {
     if [ -n "$HL_SSH_KEY_URL" ]; then
         mkdir --mode=0700 "$tmp"/root/.ssh
 
-        curl -o "$tmp"/root/.ssh/authorized_keys "$HL_SSH_KEY_URL"
+        curl --max-time 10 -o "$tmp"/root/.ssh/authorized_keys "$HL_SSH_KEY_URL"
         chmod 0400 "$tmp"/root/.ssh/authorized_keys
     fi
 }
