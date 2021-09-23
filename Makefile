@@ -14,9 +14,19 @@ ifneq ($(wildcard $(WORK_DIR)/armv7),)
 endif
 	rm -rf $(WORK_DIR)
 
-build-images: firewall
+build-images: rpi-firewall rpi-basic
 
-firewall: armv7-chroot armv7-build-user # armv7-chroot-initramfs-hack
+rpi-basic: armv7-chroot armv7-build-user # armv7-chroot-initramfs-hack
+	$(WORK_DIR)/armv7/enter-chroot -u $(BUILD_USER) \
+		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
+		--arch armv7 \
+		--profile rpi_basic \
+		--outdir $(abspath $(WORK_DIR))/shared \
+		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
+		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
+	$(WORK_DIR)/armv7/destroy --remove
+
+rpi-firewall: armv7-chroot armv7-build-user # armv7-chroot-initramfs-hack
 	HL_OVERLAY_DIR=$(abspath $(WORK_DIR))/shared/overlays \
 	$(WORK_DIR)/armv7/enter-chroot -u $(BUILD_USER) \
 		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \

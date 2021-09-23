@@ -3,6 +3,7 @@
 Build scripts that use [qemu] and [alpine-chroot-install] to create custom
 Alpine images that run from RAM.  Images will include:
 
+* [x] rpi-basic - `armv7` image for basic Raspberry Pi 2, 3, or 4 host
 * [x] rpi-firewall - `armv7` image to run [awall], [dnsmasq], and [wireguard] on Raspberry Pi 4 as home router
 * [ ] rpi-snapcast - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
 * [ ] k0s - `x86_64` image with [k0s] and [ArgoCD] for home Kubernetes cluster
@@ -19,6 +20,19 @@ and are the main reason for publishing.
 
 All images run [chrony] for NTP time sync, sshd, and the Prometheus [node-exporter]
 to expose host metrics.
+
+### rpi-basic
+
+Image for Raspberry Pi 2, 3, or 4 to act as a basic host.  Mostly used
+for adhoc testing.
+
+Pulls dhcp lease on wired interface and runs openssh server. `root`
+user does not have password and the only way to login with ssh is
+with key-based authenticateion.  Set `HL_SSH_KEY_URL` to the URL of
+a [ssh authorized_keys file] to pre-authorize one or more keys.
+
+Runs consoles on `tty1` and `ttyACM0`, the Pi's [built-in serial port].  Boot
+messages are logged to serial console.
 
 ### rpi-firewall
 
@@ -52,6 +66,7 @@ Replaces a similar setup with [Seagate DockStar] running [ArchLinux ARM] and
 [seagate dockstar]: https://www.seagate.com/support/external-hard-drives/network-storage/dockstar/
 [shorewall]: https://shorewall.org/
 [snapcast]: https://github.com/badaix/snapcast#readme
+[ssh authorized_keys file]: https://man.openbsd.org/sshd_config#AuthorizedKeysFile
 [qemu]: https://qemu.org/
 [vlans]: https://en.wikipedia.org/wiki/Virtual_LAN
 [wireguard]: https://www.wireguard.com/
