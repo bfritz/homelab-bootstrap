@@ -4,16 +4,6 @@ hostname="$1"
 
 source "$(dirname "$0")/shared.sh"
 
-add_ssh_key() {
-	[ -d "$tmp"/root ] || mkdir --mode=0700 "$tmp"/root
-	if [ -n "$HL_SSH_KEY_URL" ]; then
-		mkdir --mode=0700 "$tmp"/root/.ssh
-
-		curl -o "$tmp"/root/.ssh/authorized_keys "$HL_SSH_KEY_URL"
-		chmod 0400 "$tmp"/root/.ssh/authorized_keys
-	fi
-}
-
 configure_installed_packages() {
 	apk_add \
 		chrony \

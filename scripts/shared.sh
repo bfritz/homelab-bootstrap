@@ -33,6 +33,17 @@ EOF
         done
 }
 
+# if $HL_SSH_KEY_URL is set, download and drop into /root/.ssh/authorized_keys
+add_ssh_key() {
+    [ -d "$tmp"/root ] || mkdir --mode=0700 "$tmp"/root
+    if [ -n "$HL_SSH_KEY_URL" ]; then
+        mkdir --mode=0700 "$tmp"/root/.ssh
+
+        curl -o "$tmp"/root/.ssh/authorized_keys "$HL_SSH_KEY_URL"
+        chmod 0400 "$tmp"/root/.ssh/authorized_keys
+    fi
+}
+
 install_overlays() {
     if [ -n "$HL_OVERLAY_DIR" ] && [ -d "$HL_OVERLAY_DIR" ]; then
         for T in "$HL_OVERLAY_DIR"/*.tgz; do
