@@ -109,17 +109,52 @@ iface wg0 inet static
 	use wireguard
 	address {{ .vpn.int_ip }}
 	netmask {{ .vpn.int_mask }}
-        # send DNS traffic over VPN
-        post-up ip -4 route add 1.1.1.1 dev wg0
-        post-up ip -4 route add 8.8.8.8 dev wg0
-        post-up ip -4 route add 8.8.4.4 dev wg0
-        post-up sh -c 'grep -q k8s_net /etc/iproute2/rt_tables || echo "118 k8s_net" >> /etc/iproute2/rt_tables'
-        post-up ip -4 rule add iif eth0.118 table k8s_net
-        post-up ip -4 rule add suppress_prefixlength 0 table main
-        post-up ip -4 route add default via {{ .vpn.int_ip }} dev wg0 table k8s_net
-        pre-down ip -4 route flush table k8s_net
-        pre-down ip -4 rule del suppress_prefixlength 0 table main
-        pre-down ip -4 rule del iif eth0.118 table k8s_net
+	# send DNS traffic over VPN
+	post-up ip -4 route add 1.1.1.1 dev wg0
+	post-up ip -4 route add 8.8.8.8 dev wg0
+	post-up ip -4 route add 8.8.4.4 dev wg0
+	# route k8s traffic over VPN
+	post-up /usr/local/bin/vpn_routes add k8s_net 118 "{{ .vpn.int_ip }}"
+	pre-down /usr/local/bin/vpn_routes del k8s_net 118
+	# honor routes to 172.22.x.0/24 networks; see https://stackoverflow.com/a/68988919
+	post-up ip -4 rule add suppress_prefixlength 0 table main
+	pre-down ip -4 rule del suppress_prefixlength 0 table main
+EOF
+
+	[ -d "$tmp"/usr/local/bin ] || mkdir -p --mode=0755 "$tmp"/usr/local/bin
+	makefile root:root 0755 "$tmp"/usr/local/bin/vpn_routes <<EOF
+#!/bin/sh
+
+set -e
+
+[ -z "\$VERBOSE" ] || set -x
+
+add_route() {
+	local table_name="\$1"
+	local vlan_id="\$2"
+	local source_ip="\$3"
+
+	grep -q "\$table_name" /etc/iproute2/rt_tables || echo "\$vlan_id \$table_name" >> /etc/iproute2/rt_tables
+	ip -4 rule add iif "eth0.\$vlan_id" table "\$table_name"
+	ip -4 route add default via "\$source_ip" dev wg0 table "\$table_name"
+}
+
+del_route() {
+	local table_name="\$1"
+	local vlan_id="\$2"
+
+	ip -4 route flush table "\$table_name" || true
+	ip -4 rule del iif "eth0.\$vlan_id" table "\$table_name" || true
+}
+
+case "\$1" in
+add)
+	add_route "\$2" "\$3" "\$4"
+	;;
+del)
+	del_route "\$2" "\$3"
+	;;
+esac
 EOF
 }
 
@@ -188,7 +223,7 @@ start() {
 
 	ebegin "Deleting \$conf"
 	mount -o remount,rw "\$(dirname \$conf)"
-        rm \$conf
+	rm \$conf
 	eend \$?
 	mount -o remount,ro "\$(dirname \$conf)"
 }
@@ -210,6 +245,7 @@ start() {
 	rc-update del customize_image boot
 	rc-update del customize_image_save default
 	[ -e /root/.ssh/authorized_keys ] && lbu include /root/.ssh/authorized_keys
+	[ -e /usr/local/bin/vpn_routes ] && lbu include /usr/local/bin/vpn_routes
 	lbu commit -d mmcblk0p1
 	eend $?
 }
@@ -234,4 +270,4 @@ add_customize_image_init_scripts
 install_overlays
 
 echo "Creating overlay file $hostname.apkovl.tar.gz ..."
-tar -C "$tmp" -c etc root | gzip -9n > "$hostname.apkovl.tar.gz"
+tar -C "$tmp" -c etc root usr/local | gzip -9n > "$hostname.apkovl.tar.gz"
