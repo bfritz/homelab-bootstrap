@@ -1,6 +1,7 @@
 # copy to /media/mmcblk0p1/config.yaml prior to booting image
 vpn:
   ext_ip: 1.2.3.4
+  port: 51820
   int_ip: 10.3.45.6
   int_mask: 255.255.252.0
   wg0:

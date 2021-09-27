@@ -86,7 +86,7 @@ PrivateKey={{ .vpn.wg0.private_key }}
 [Peer]
 PublicKey={{ .vpn.wg0.public_key }}
 PresharedKey={{ .vpn.wg0.preshared_key }}
-Endpoint={{ .vpn.ext_ip }}:51820
+Endpoint={{ .vpn.ext_ip }}:{{ .vpn.port }}
 PersistentKeepalive=25
 AllowedIPs=0.0.0.0/0, ::/0
 EOF
