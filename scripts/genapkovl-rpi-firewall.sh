@@ -45,15 +45,18 @@ interface=eth0.$vlan_id
 bind-interfaces
 EOF
 
-if [ "$enable_dhcp" = "1" ]; then
+	local dhcp_range_option="dhcp-range=$net_prefix.0,static"
+	if [ "$enable_dhcp" = "1" ]; then
+		dhcp_range_option="dhcp-range=$net_prefix.100,$net_prefix.149,12h"
+	fi
+
 	cat >> "$tmp/etc/dnsmasq.d/$file" <<EOF
 
-dhcp-range=$net_prefix.100,$net_prefix.149,12h
+$dhcp_range_option
 
 # use firewall as ntp server
 dhcp-option=42,$net_prefix.1
 EOF
-fi
 }
 
 
