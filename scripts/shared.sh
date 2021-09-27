@@ -47,9 +47,11 @@ add_ssh_key() {
 install_overlays() {
     if [ -n "$HL_OVERLAY_DIR" ] && [ -d "$HL_OVERLAY_DIR" ]; then
         for T in "$HL_OVERLAY_DIR"/*.tgz; do
-            name="$(basename "$T")"
-            echo "Extracting $name overlay..."
-            tar -C "$tmp" -xzf "$T"
+            if [ -e "$T" ]; then
+                name="$(basename "$T")"
+                echo "Extracting $name overlay..."
+                tar -C "$tmp" -xzf "$T"
+            fi
         done
     fi
 }
