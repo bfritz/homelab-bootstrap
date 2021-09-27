@@ -49,6 +49,9 @@ if [ "$enable_dhcp" = "1" ]; then
 	cat >> "$tmp/etc/dnsmasq.d/$file" <<EOF
 
 dhcp-range=$net_prefix.100,$net_prefix.149,12h
+
+# use firewall as ntp server
+dhcp-option=42,$net_prefix.1
 EOF
 fi
 }
@@ -75,6 +78,22 @@ EOF
 	add_vlan_interface 104 172.22.4  ; add_vlan_dns_and_dhcp 104 172.22.4  gwif
 	add_vlan_interface 113 172.22.13 ; add_vlan_dns_and_dhcp 113 172.22.13 mgmt 0
 	add_vlan_interface 118 172.22.18 ; add_vlan_dns_and_dhcp 118 172.22.18 k8s 0
+}
+
+configure_chrony_as_server() {
+	[ -d "$tmp"/etc/chrony ] || mkdir --mode=0755 "$tmp"/etc/chrony
+	makefile root:root 0644 "$tmp"/etc/chrony/chrony.conf <<EOF
+# default config
+pool pool.ntp.org iburst
+initstepslew 10 pool.ntp.org
+driftfile /var/lib/chrony/chrony.drift
+rtcsync
+cmdport 0
+# end default config
+
+# run ntp server for internal networks
+allow 172.22.0.0/19
+EOF
 }
 
 configure_wireguard() {
@@ -282,6 +301,7 @@ configure_wireguard
 log_martians
 configure_installed_packages
 configure_syslog
+configure_chrony_as_server
 add_ssh_key
 configure_init_scripts
 add_customize_image_init_scripts

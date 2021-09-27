@@ -36,10 +36,10 @@ messages are logged to serial console.
 
 ### rpi-firewall
 
-Firewall image intended for Raspberry Pi 4.  The firewall rules, stored in a
-separate repo, are defined using [awall].   [VLANs] are used so the Pi, with a
-single ethernet interface, can support multiple network zones.  Includes
-[wireguard] to create VPN tunnels.
+Firewall image intended for Raspberry Pi 4.  The iptables firewall rules, stored
+in a separate repo, are defined using [awall].   [VLANs] are used so the Pi, with
+a single ethernet interface, can support multiple network zones.  Includes
+[wireguard] to create VPN tunnels.  Also runs chrony in ntp server mode.
 
 Runs consoles on `tty1` and `ttyACM0`, the Pi's [built-in serial port].  Boot
 messages are logged to serial console.
