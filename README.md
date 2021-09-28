@@ -1,5 +1,8 @@
 # bfritz homelab bootstrap scripts
 
+<!-- badges -->
+![continuous integration status](https://github.com/bfritz/homelab-bootstrap/actions/workflows/ci.yaml/badge.svg)
+
 Build scripts that use [qemu] and [alpine-chroot-install] to create custom
 Alpine images that run from RAM.  Images will include:
 
