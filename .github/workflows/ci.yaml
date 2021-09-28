@@ -1,0 +1,18 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-images:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: rpi-basic
+        run: make rpi-basic
+
+      - name: rpi-firewall
+        run: make rpi-firewall
