@@ -2,7 +2,9 @@
 
 hostname="$1"
 
-source "$(dirname "$0")/shared.sh"
+basedir="$(dirname "$0")"
+[ "$basedir" = "/bin" ] && basedir="./scripts" # shellspec workaround for $0 handling
+source "$basedir"/shared.sh
 
 configure_installed_packages() {
 	apk_add \
