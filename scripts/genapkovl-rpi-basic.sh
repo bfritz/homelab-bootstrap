@@ -4,8 +4,7 @@ hostname="$1"
 
 basedir="$(dirname "$0")"
 [ "$basedir" = "/bin" ] && basedir="./scripts" # shellspec workaround for $0 handling
-# shellcheck disable=SC1091
-source "$basedir"/shared.sh
+. "$basedir"/shared.sh
 
 configure_installed_packages() {
 	apk_add \
@@ -16,7 +15,8 @@ configure_installed_packages() {
 }
 
 log_martians() {
-	mkdir -p --mode=0700 "$tmp"/etc/sysctl.d
+	[ ! -d "$tmp"/etc ] && mkdir --mode=0755 "$tmp"/etc
+	[ ! -d "$tmp"/etc/sysctl.d ] && mkdir --mode=0700 "$tmp"/etc/sysctl.d
 	makefile root:root 0644 "$tmp"/etc/sysctl.d/log_martians.conf <<EOF
 # https://www.cyberciti.biz/faq/linux-log-suspicious-martian-packets-un-routable-source-addresses/
 net.ipv4.conf.all.log_martians = 1

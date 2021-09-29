@@ -26,9 +26,9 @@ apk_add() {
                 makefile root:root 0644 "$tmp"/etc/apk/world <<EOF
 EOF
         fi
-        for a in $@ ; do
-                if [ -z "$(cat $tmp/etc/apk/world | grep $a)" ] ; then
-                        echo $a >> "$tmp"/etc/apk/world
+        for a in "$@" ; do
+                if ! grep -q "$a" "$tmp"/etc/apk/world ; then
+                        echo "$a" >> "$tmp"/etc/apk/world
                 fi
         done
 }

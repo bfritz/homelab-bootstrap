@@ -4,8 +4,7 @@ hostname="$1"
 
 basedir="$(dirname "$0")"
 [ "$basedir" = "/bin" ] && basedir="./scripts" # shellspec workaround for $0 handling
-# shellcheck disable=SC1091
-source "$basedir"/shared.sh
+. "$basedir"/shared.sh
 
 configure_installed_packages() {
 	apk_add \
@@ -48,7 +47,7 @@ interface=eth0.$vlan_id
 bind-interfaces
 EOF
 
-	local dhcp_range_option="dhcp-range=$net_prefix.0,static"
+	dhcp_range_option="dhcp-range=$net_prefix.0,static"
 	if [ "$enable_dhcp" = "1" ]; then
 		dhcp_range_option="dhcp-range=$net_prefix.100,$net_prefix.149,12h"
 	fi
@@ -151,7 +150,9 @@ iface wg0 inet static
 	pre-down ip -4 rule del suppress_prefixlength 0 table main
 EOF
 
-	[ -d "$tmp"/usr/local/bin ] || mkdir -p --mode=0755 "$tmp"/usr/local/bin
+	[ -d "$tmp"/usr ] || mkdir --mode=0755 "$tmp"/usr
+	[ -d "$tmp"/usr/local ] || mkdir --mode=0755 "$tmp"/usr/local
+	[ -d "$tmp"/usr/local/bin ] || mkdir --mode=0755 "$tmp"/usr/local/bin
 	makefile root:root 0755 "$tmp"/usr/local/bin/vpn_routes <<EOF
 #!/bin/sh
 
@@ -189,7 +190,8 @@ EOF
 }
 
 log_martians() {
-	mkdir -p --mode=0700 "$tmp"/etc/sysctl.d
+	[ ! -d "$tmp"/etc ] && mkdir --mode=0755 "$tmp"/etc
+	[ ! -d "$tmp"/etc/sysctl.d ] && mkdir --mode=0700 "$tmp"/etc/sysctl.d
 	makefile root:root 0644 "$tmp"/etc/sysctl.d/log_martians.conf <<EOF
 # https://www.cyberciti.biz/faq/linux-log-suspicious-martian-packets-un-routable-source-addresses/
 net.ipv4.conf.all.log_martians = 1
