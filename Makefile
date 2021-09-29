@@ -11,6 +11,9 @@ SHELLSPEC_TAG := 0.28.1
 
 all: build-images
 
+lint:
+	shellcheck scripts/*.sh
+
 test: $(SHELLSPEC_DIR)/shellspec
 	$(SHELLSPEC_DIR)/shellspec
 
@@ -96,3 +99,5 @@ armv7-chroot-initramfs-hack:
 		sed -i 's/^apkflags="\(.*\)"/apkflages="--allow-untrusted \1"/' /usr/share/mkinitfs/initramfs-init
 	$(WORK_DIR)/armv7/enter-chroot \
 		grep '^apk' /usr/share/mkinitfs/initramfs-init
+
+.PHONY: lint
