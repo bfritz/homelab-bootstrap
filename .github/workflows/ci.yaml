@@ -15,6 +15,7 @@ jobs:
         run: make test
 
   build-images:
+    needs: test-scripts
     runs-on: ubuntu-20.04
 
     steps:
