@@ -2,7 +2,9 @@
 
 hostname="$1"
 
-source "$(dirname "$0")/shared.sh"
+basedir="$(dirname "$0")"
+[ "$basedir" = "/bin" ] && basedir="./scripts" # shellspec workaround for $0 handling
+source "$basedir"/shared.sh
 
 configure_installed_packages() {
 	apk_add \
@@ -79,6 +81,9 @@ EOF
 	add_vlan_interface 102 172.22.2  ; add_vlan_dns_and_dhcp 102 172.22.2  dmz 0
 	add_vlan_interface 103 172.22.3  ; add_vlan_dns_and_dhcp 103 172.22.3  swif
 	add_vlan_interface 104 172.22.4  ; add_vlan_dns_and_dhcp 104 172.22.4  gwif
+	add_vlan_interface 105 172.22.5  ; add_vlan_dns_and_dhcp 105 172.22.5  vwif
+	add_vlan_interface 111 172.22.11 ; add_vlan_dns_and_dhcp 111 172.22.11 ata 0
+	add_vlan_interface 112 172.22.12 ; add_vlan_dns_and_dhcp 112 172.22.12 voip 0
 	add_vlan_interface 113 172.22.13 ; add_vlan_dns_and_dhcp 113 172.22.13 mgmt 0
 	add_vlan_interface 118 172.22.18 ; add_vlan_dns_and_dhcp 118 172.22.18 k8s 0
 }
@@ -131,6 +136,12 @@ iface wg0 inet static
 	# route dmz traffic over VPN
 	post-up /usr/local/bin/vpn_routes add dmz_net 102 "{{ .vpn.int_ip }}"
 	pre-down /usr/local/bin/vpn_routes del dmz_net 102
+	# route vwifi traffic over VPN
+	post-up /usr/local/bin/vpn_routes add vwif_net 105 "{{ .vpn.int_ip }}"
+	pre-down /usr/local/bin/vpn_routes del vwif_net 105
+	# route voip traffic over VPN
+	post-up /usr/local/bin/vpn_routes add voip_net 112 "{{ .vpn.int_ip }}"
+	pre-down /usr/local/bin/vpn_routes del voip_net 112
 	# route k8s traffic over VPN
 	post-up /usr/local/bin/vpn_routes add k8s_net 118 "{{ .vpn.int_ip }}"
 	pre-down /usr/local/bin/vpn_routes del k8s_net 118
