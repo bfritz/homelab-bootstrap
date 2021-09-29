@@ -12,7 +12,7 @@ SHELLSPEC_TAG := 0.28.1
 all: build-images
 
 lint:
-	shellcheck scripts/*.sh
+	shellcheck scripts/shared.sh scripts/genapkovl-*.sh
 
 test: $(SHELLSPEC_DIR)/shellspec
 	$(SHELLSPEC_DIR)/shellspec
