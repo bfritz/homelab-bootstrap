@@ -139,9 +139,9 @@ iface wg0 inet static
 	# route vwifi traffic over VPN
 	post-up /usr/local/bin/vpn_routes add vwif_net 105 "{{ .vpn.int_ip }}"
 	pre-down /usr/local/bin/vpn_routes del vwif_net 105
-	# route voip traffic over VPN
-	post-up /usr/local/bin/vpn_routes add voip_net 112 "{{ .vpn.int_ip }}"
-	pre-down /usr/local/bin/vpn_routes del voip_net 112
+	# route ATA traffic over VPN
+	post-up /usr/local/bin/vpn_routes add ata_net 111 "{{ .vpn.int_ip }}"
+	pre-down /usr/local/bin/vpn_routes del ata_net 111
 	# route k8s traffic over VPN
 	post-up /usr/local/bin/vpn_routes add k8s_net 118 "{{ .vpn.int_ip }}"
 	pre-down /usr/local/bin/vpn_routes del k8s_net 118
