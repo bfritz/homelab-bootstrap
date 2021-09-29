@@ -4,6 +4,7 @@ hostname="$1"
 
 basedir="$(dirname "$0")"
 [ "$basedir" = "/bin" ] && basedir="./scripts" # shellspec workaround for $0 handling
+# shellcheck disable=SC1091
 source "$basedir"/shared.sh
 
 configure_installed_packages() {
