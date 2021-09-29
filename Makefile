@@ -12,7 +12,7 @@ SHELLSPEC_TAG := 0.28.1
 all: build-images
 
 lint:
-	shellcheck --exclude=SC1091 scripts/shared.sh scripts/genapkovl-*.sh
+	shellcheck --exclude=SC1090,SC1091 scripts/shared.sh scripts/genapkovl-*.sh
 
 test: $(SHELLSPEC_DIR)/shellspec
 	$(SHELLSPEC_DIR)/shellspec
