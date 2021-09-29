@@ -4,9 +4,15 @@ ALPINE_VERSION := 3.14
 APORTS_REPO := https://github.com/alpinelinux/aports.git
 BUILD_USER := imagebuilder
 WORK_DIR := bootstrap
+SHELLSPEC_DIR := shellspec
+SHELLSPEC_REPO := https://github.com/shellspec/shellspec.git
+SHELLSPEC_TAG := 0.28.1
 
 
 all: build-images
+
+test: $(SHELLSPEC_DIR)/shellspec
+	$(SHELLSPEC_DIR)/shellspec
 
 clean:
 ifneq ($(wildcard $(WORK_DIR)/armv7),)
@@ -78,6 +84,9 @@ clone-aports:
 ifeq ($(wildcard $(WORK_DIR)/shared/aports/.git),)
 	git clone --depth 1 $(APORTS_REPO) $(WORK_DIR)/shared/aports
 endif
+
+$(SHELLSPEC_DIR)/shellspec:
+	git -c advice.detachedHead=false clone --depth 1 -b $(SHELLSPEC_TAG) $(SHELLSPEC_REPO) $(SHELLSPEC_DIR)
 
 # Insert `--allow-untrusted` into the init script used to boostrap the live system
 # from the initramfs.  Useful for debugging errors...like why `/etc/inittab` is missing.

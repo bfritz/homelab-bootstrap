@@ -1,2 +1,9 @@
-bootstrap/
-config/*.yaml
+/bootstrap/
+/config/*.yaml
+
+# shellspec
+/shellspec/
+/.shellspec-local
+/.shellspec-quick.log
+/report/
+/coverage/

@@ -5,6 +5,15 @@ on:
     branches: [ main ]
 
 jobs:
+  test-scripts:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: test
+        run: make test
+
   build-images:
     runs-on: ubuntu-20.04
 
