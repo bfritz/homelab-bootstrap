@@ -27,6 +27,17 @@ rpi-firewall: chroot build-user # chroot-initramfs-hack
 		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
 	$(WORK_DIR)/$(ARCH)/destroy --remove
 
+k0s-worker: build-user
+	HL_OVERLAY_DIR=$(abspath $(WORK_DIR))/shared/overlays \
+	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
+		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
+		--arch $(ARCH) \
+		--profile k0s_worker \
+		--outdir $(abspath $(WORK_DIR))/shared \
+		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
+		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
+	$(WORK_DIR)/$(ARCH)/destroy --remove
+
 chroot: clone-aci populate-shared
 	sudo SUDO_USER=$(BUILD_USER) \
 		$(WORK_DIR)/aci/alpine-chroot-install \
@@ -34,7 +45,7 @@ chroot: clone-aci populate-shared
 		-d $(abspath $(WORK_DIR))/$(ARCH) \
 		-i $(abspath $(WORK_DIR))/shared \
 		-k "ARCH CI QEMU_EMULATOR HL_.*" \
-		-p "abuild apk-tools alpine-conf busybox fakeroot sudo squashfs-tools mkinitfs"
+		-p "abuild apk-tools alpine-conf busybox fakeroot sudo squashfs-tools mkinitfs grub-efi mtools xorriso"
 
 build-user: chroot
 	# add non-root user to build images

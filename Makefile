@@ -9,17 +9,20 @@ SHELLSPEC_DIR := shellspec
 SHELLSPEC_REPO := https://github.com/shellspec/shellspec.git
 SHELLSPEC_TAG := 0.28.1
 
-.PHONY: all build-images rpi-basic rpi-firewall lint test clean
+.PHONY: all build-images rpi-basic rpi-firewall k0s-worker lint test clean
 
 all: build-images
 
-build-images: rpi-basic rpi-firewall
+build-images: rpi-basic rpi-firewall k0s-worker
 
 rpi-basic:
 	ARCH=armv7  make -f Makefile.images rpi-basic
 
 rpi-firewall:
 	ARCH=armv7  make -f Makefile.images rpi-firewall
+
+k0s-worker:
+	ARCH=x86_64 make -f Makefile.images k0s-worker
 
 lint:
 	shellcheck --exclude=SC1090,SC1091 scripts/shared.sh scripts/genapkovl-*.sh
@@ -32,3 +35,4 @@ $(SHELLSPEC_DIR)/shellspec:
 
 clean:
 	ARCH=armv7  make -f Makefile.images clean
+	ARCH=x86_64 make -f Makefile.images clean
