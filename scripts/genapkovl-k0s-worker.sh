@@ -11,6 +11,10 @@ configure_installed_packages() {
 	apk_add \
 		chrony \
 		openssh-server \
+		findutils \
+		coreutils \
+		curl \
+		iptables \
 
 }
 
