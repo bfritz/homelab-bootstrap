@@ -1,0 +1,6 @@
+.terraform.lock.hcl
+.terraform/
+terraform.tfstate*
+tf.plan
+authorized_key_*.tf
+cluster.yaml
