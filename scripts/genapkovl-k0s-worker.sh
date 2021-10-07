@@ -60,6 +60,7 @@ configure_init_scripts() {
 	# additional services
 	rc_add chronyd default
 	rc_add sshd default
+	rc_add cgroups default
 }
 
 install_k0s() {

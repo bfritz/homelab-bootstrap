@@ -11,6 +11,13 @@ Describe 'genapkovl-k0s-worker.sh'
 
   Include ./scripts/genapkovl-k0s-worker.sh
 
+  Describe 'configure_init_scripts'
+    It 'enables cgroups at default runlevels'
+      When call configure_init_scripts
+      The path "$tmp/etc/runlevels/default/cgroups" should be symlink
+    End
+  End
+
   Describe 'install_k0s'
     It 'installs k0s binary in /usr/local/bin/k0s'
       HL_SSH_KEY_URL="https://somehost/foo.pub"
