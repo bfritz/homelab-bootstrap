@@ -9,7 +9,7 @@ Alpine images that run from RAM.  Images will include:
 * [x] rpi-basic - `armv7` image for basic Raspberry Pi 2, 3, or 4 host
 * [x] rpi-firewall - `armv7` image to run [awall], [dnsmasq], and [wireguard] on Raspberry Pi 4 as home router
 * [ ] rpi-snapcast - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
-* [ ] k0s - `x86_64` image with [k0s] and [ArgoCD] for home Kubernetes cluster
+* [x] k0s-worker - `x86_64` image to run as [k0s] worker node
 
 These [Alpine Linux] images run on my home network and are rather opinionated.
 No image tarballs are published because it is unlikely they would be generally
@@ -50,6 +50,14 @@ messages are logged to serial console.
 Replaces a similar setup with [Seagate DockStar] running [ArchLinux ARM] and
 [Shorewall] that served as my home router for many years.
 
+### k0s-worker
+
+Image for x86_64 machines that will be provisioned to run the [k0s] distribution
+of Kubernetes.  Intended as the foundation for kubernetes worker nodes that will
+be provisioned with [k0sctl].
+
+
+
 ## Prior Art and Inspiration
 
 * [alpine-composer](https://github.com/ggpwnkthx/alpine-composer) by [Isaac Jessup](https://github.com/ggpwnkthx)
@@ -65,6 +73,7 @@ Replaces a similar setup with [Seagate DockStar] running [ArchLinux ARM] and
 [chrony]: https://chrony.tuxfamily.org/
 [dnsmasq]: https://thekelleys.org.uk/dnsmasq/doc.html
 [k0s]: https://k0sproject.io/
+[k0sctl]: https://github.com/k0sproject/k0sctl
 [node-exporter]: https://prometheus.io/docs/guides/node-exporter/
 [seagate dockstar]: https://www.seagate.com/support/external-hard-drives/network-storage/dockstar/
 [shorewall]: https://shorewall.org/

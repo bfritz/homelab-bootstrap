@@ -32,3 +32,6 @@ jobs:
 
       - name: rpi-firewall
         run: make rpi-firewall
+
+      - name: k0s-worker
+        run: make k0s-worker

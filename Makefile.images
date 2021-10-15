@@ -1,0 +1,90 @@
+
+.PHONY: clean
+clean:
+ifneq ($(wildcard $(WORK_DIR)/$(ARCH)),)
+	$(WORK_DIR)/$(ARCH)/destroy --remove
+endif
+	rm -rf $(WORK_DIR)
+
+rpi-basic: chroot build-user # chroot-initramfs-hack
+	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
+		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
+		--arch $(ARCH) \
+		--profile rpi_basic \
+		--outdir $(abspath $(WORK_DIR))/shared \
+		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
+		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
+	$(WORK_DIR)/$(ARCH)/destroy --remove
+
+rpi-firewall: chroot build-user # chroot-initramfs-hack
+	HL_OVERLAY_DIR=$(abspath $(WORK_DIR))/shared/overlays \
+	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
+		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
+		--arch $(ARCH) \
+		--profile rpi_firewall \
+		--outdir $(abspath $(WORK_DIR))/shared \
+		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
+		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
+	$(WORK_DIR)/$(ARCH)/destroy --remove
+
+k0s-worker: build-user
+	HL_OVERLAY_DIR=$(abspath $(WORK_DIR))/shared/overlays \
+	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
+		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
+		--arch $(ARCH) \
+		--profile k0s_worker \
+		--outdir $(abspath $(WORK_DIR))/shared \
+		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
+		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
+	$(WORK_DIR)/$(ARCH)/destroy --remove
+
+chroot: clone-aci populate-shared
+	sudo SUDO_USER=$(BUILD_USER) \
+		$(WORK_DIR)/aci/alpine-chroot-install \
+		-a $(ARCH) \
+		-d $(abspath $(WORK_DIR))/$(ARCH) \
+		-i $(abspath $(WORK_DIR))/shared \
+		-k "ARCH CI QEMU_EMULATOR HL_.*" \
+		-p "abuild apk-tools alpine-conf busybox fakeroot sudo squashfs-tools mkinitfs grub-efi mtools xorriso"
+
+build-user: chroot
+	# add non-root user to build images
+	$(WORK_DIR)/$(ARCH)/enter-chroot adduser $(BUILD_USER) abuild
+	$(WORK_DIR)/$(ARCH)/enter-chroot adduser $(BUILD_USER) wheel # for sudo
+
+ifeq ($(wildcard $(WORK_DIR)/shared/keys/*rsa),)
+	rm -rf $(WORK_DIR)/shared/keys
+	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
+		abuild-keygen -a -i -n
+	$(WORK_DIR)/$(ARCH)/enter-chroot \
+		chgrp abuild $(abspath $(WORK_DIR))/shared
+	$(WORK_DIR)/$(ARCH)/enter-chroot \
+		chmod g+rwx  $(abspath $(WORK_DIR))/shared
+	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
+		cp -ar /home/$(BUILD_USER)/.abuild $(abspath $(WORK_DIR))/shared/keys
+else
+	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
+		cp -ar $(abspath $(WORK_DIR))/shared/keys /home/$(BUILD_USER)/.abuild
+endif
+
+populate-shared: clone-aports
+	cp -pu scripts/* $(WORK_DIR)/shared/aports/scripts
+
+clone-aci:
+ifeq ($(wildcard $(WORK_DIR)/aci/.git),)
+	git -c advice.detachedHead=false clone -b $(ACI_TAG) $(ACI_REPO) $(WORK_DIR)/aci
+endif
+
+clone-aports:
+ifeq ($(wildcard $(WORK_DIR)/shared/aports/.git),)
+	git clone --depth 1 $(APORTS_REPO) $(WORK_DIR)/shared/aports
+endif
+
+# Insert `--allow-untrusted` into the init script used to boostrap the live system
+# from the initramfs.  Useful for debugging errors...like why `/etc/inittab` is missing.
+# (See previous commits.)
+chroot-initramfs-hack:
+	$(WORK_DIR)/$(ARCH)/enter-chroot \
+		sed -i 's/^apkflags="\(.*\)"/apkflages="--allow-untrusted \1"/' /usr/share/mkinitfs/initramfs-init
+	$(WORK_DIR)/$(ARCH)/enter-chroot \
+		grep '^apk' /usr/share/mkinitfs/initramfs-init
