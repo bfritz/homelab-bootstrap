@@ -19,6 +19,7 @@ configure_installed_packages() {
 		coreutils \
 		curl \
 		iptables \
+		nfs-utils \
 
 }
 
