@@ -224,6 +224,7 @@ configure_init_scripts() {
 	rc_add sshd default
 	rc_add node-exporter default
 	rc_add dnsmasq default
+	rc_add vector default
 }
 
 configure_syslog() {
@@ -299,6 +300,9 @@ start() {
 	rc-update del customize_image_save default
 	[ -e /root/.ssh/authorized_keys ] && lbu include /root/.ssh/authorized_keys
 	[ -e /usr/local/bin/vpn_routes ] && lbu include /usr/local/bin/vpn_routes
+	[ -e /etc/init.d/vector ] && lbu include /etc/init.d/vector
+	[ -e /usr/local/bin/vector ] && lbu include /usr/local/bin/vector
+	[ -e /var/lib/vector ] && lbu include /var/lib/vector
 	lbu commit -d mmcblk0p1
 	eend $?
 }
@@ -321,6 +325,7 @@ configure_installed_packages
 configure_syslog
 configure_chrony_as_server
 add_ssh_key
+add_vector 0.17.3 armv7-unknown-linux-musleabihf
 configure_init_scripts
 add_customize_image_init_scripts
 install_overlays
