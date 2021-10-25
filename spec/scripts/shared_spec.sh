@@ -69,5 +69,12 @@ Describe 'shared.sh'
       The path $tmp/usr/local/bin/vector should be exist
       The path $tmp/usr/local/bin/vector should be executable
     End
+
+    It 'creates /var/lib/vector'
+      When call add_vector 0.88.99 armv7-unknown-linux-gnueabihf
+      The output should start with "Downloading vector from URL: https://packages.timber.io/vector/0.88.99/vector-0.88.99-"
+      The path $tmp/var/lib/vector should be exist
+      The path $tmp/var/lib/vector should be a directory
+    End
   End
 End

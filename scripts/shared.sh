@@ -81,6 +81,7 @@ name="vector"
 description="A high-performance observability data pipeline.  https://vector.dev/"
 command="/usr/local/bin/vector"
 pidfile="/run/vector.pid"
+required_dirs="/var/lib/vector"
 
 extra_started_commands="reload"
 description_reload="Reload configuration"
@@ -121,6 +122,10 @@ source = '''
 type = "blackhole"
 inputs = ["parse_logs"]
 EOF
+
+    [ -d "$tmp"/var ] || mkdir --mode=0755 "$tmp"/var
+    [ -d "$tmp"/var/lib ] || mkdir --mode=0755 "$tmp"/var/lib
+    [ -d "$tmp"/var/lib/vector ] || mkdir --mode=0755 "$tmp"/var/lib/vector
 }
 
 install_overlays() {

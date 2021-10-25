@@ -331,4 +331,4 @@ add_customize_image_init_scripts
 install_overlays
 
 echo "Creating overlay file $hostname.apkovl.tar.gz ..."
-tar -C "$tmp" -c etc root usr/local | gzip -9n > "$hostname.apkovl.tar.gz"
+tar -C "$tmp" -c etc root usr/local var/lib/vector | gzip -9n > "$hostname.apkovl.tar.gz"
