@@ -4,6 +4,14 @@ Describe 'genapkovl-rpi-firewall_spec.sh'
       true
   }
 
+  # avoid downloading 20mb+ release (tarball) from packages.timber.io
+  curl() {
+      t=$(mktemp -d)
+      mkdir -p "$t"/ignored/bin
+      touch "$t"/ignored/bin/vector
+      tar -C "$t" -cz ./ignored
+  }
+
   Include ./scripts/genapkovl-rpi-firewall.sh
 
   Describe 'add_vlan_interface'
