@@ -18,10 +18,10 @@ profile_rpi_basic() {
 	profile_rpi
 	kernel_cmdline="console=tty1 console=ttyAMA0 $CMDLINE_EXTRA"
 	apks="$apks
-	chrony
-	openssh-server
-	prometheus-node-exporter
-        atop
+	    chrony
+	    openssh-server
+	    prometheus-node-exporter
+	    atop
 "
 	apkovl="genapkovl-rpi-basic.sh"
 }
