@@ -29,6 +29,7 @@ profile_rpi_firewall() {
         ulogd-openrc
         wireguard-tools-wg
         gomplate
+        atop
 "
 	apkovl="genapkovl-rpi-firewall.sh"
 }
