@@ -1,4 +1,4 @@
 status = [
   "test-scripts",
-  "build-images"
+  "build-images %"
 ]

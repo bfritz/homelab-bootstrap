@@ -2,6 +2,7 @@
 
 <!-- badges -->
 ![continuous integration status](https://github.com/bfritz/homelab-bootstrap/actions/workflows/ci.yaml/badge.svg)
+[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/38911)
 
 Build scripts that use [qemu] and [alpine-chroot-install] to create custom
 Alpine images that run from RAM.  Images will include:
