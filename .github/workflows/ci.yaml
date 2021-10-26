@@ -35,3 +35,6 @@ jobs:
 
       - name: k0s-worker
         run: make k0s-worker
+
+      - name: list-images-content
+        run: make list-images-content
