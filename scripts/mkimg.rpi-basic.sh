@@ -21,6 +21,7 @@ profile_rpi_basic() {
 	chrony
 	openssh-server
 	prometheus-node-exporter
+        atop
 "
 	apkovl="genapkovl-rpi-basic.sh"
 }
