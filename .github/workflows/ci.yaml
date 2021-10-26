@@ -23,18 +23,16 @@ jobs:
   build-images:
     needs: test-scripts
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [rpi-basic, rpi-firewall, k0s-worker]
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: rpi-basic
-        run: make rpi-basic
-
-      - name: rpi-firewall
-        run: make rpi-firewall
-
-      - name: k0s-worker
-        run: make k0s-worker
+      - name: build ${{ matrix.image }}
+        run: make ${{ matrix.image }}
 
       - name: list-images-content
         run: make list-images-content
