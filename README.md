@@ -1,7 +1,7 @@
 # bfritz homelab bootstrap scripts
 
 <!-- badges -->
-![continuous integration status](https://github.com/bfritz/homelab-bootstrap/actions/workflows/ci.yaml/badge.svg)
+[![continuous integration status](https://github.com/bfritz/homelab-bootstrap/actions/workflows/ci.yaml/badge.svg)](https://github.com/bfritz/homelab-bootstrap/actions/workflows/ci.yaml)
 [![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/38911)
 
 Build scripts that use [qemu] and [alpine-chroot-install] to create custom
