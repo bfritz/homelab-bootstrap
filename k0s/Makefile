@@ -8,11 +8,16 @@ mkfile_dir := $(dir $(mkfile_path))
 
 all:
 
-add_controller_host:
+add_controller_host: authorized_key.tf
 	terraform init
 	terraform plan -out tf.plan
 	sleep 15   # time to review plan and hit ctrl-c if necessary :)
 	terraform apply tf.plan
+
+# Use `authorized_key.tf.example` as a guide to create your own `authorized_key.tf` file.
+# If you have a real `authorized_key.tf` file in place, the copy below will not run.
+authorized_key.tf:
+	cp -i authorized_key.tf.example authorized_key.tf
 
 provision_controller:
 	# sed is hack to allow traffic from host with Makefile when no management hosts are configured
