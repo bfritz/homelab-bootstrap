@@ -1,0 +1,31 @@
+apiVersion: k0sctl.k0sproject.io/v1beta1
+kind: Cluster
+metadata:
+  name: k0s-cluster
+spec:
+  hosts:
+  - ssh:
+      address: {{ .Env.K0S_CONTROLLER_IP }}
+      user: root
+    role: controller
+  {{/* Must be a more concise way, but `(net.ParseIPPrefix ...).Range` seemed to be a dead end. */}}
+  # 172.22.18.16/29 hosts
+{{- range $worker_ip := slice "172.22.18.17" "172.22.18.18" "172.22.18.19" "172.22.18.20" "172.22.18.21" "172.22.18.22" }}
+  - ssh:
+      address: {{ $worker_ip }}
+      user: root
+    role: worker
+{{- end }}
+  k0s:
+    version: 1.22.2+k0s.2
+    config:
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: Cluster
+      metadata:
+        name: k0s-cluster
+      spec:
+        storage:
+          type: kine
+# Use default setup of SQLite
+#          kine:
+#            dataSource: "sqlite:///var/lib/k0s/db/state.db?more=rwc&_journal=WAL&cache=shared"
