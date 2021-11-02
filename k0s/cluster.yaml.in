@@ -18,3 +18,14 @@ spec:
 {{- end }}
   k0s:
     version: 1.22.2+k0s.2
+    config:
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: Cluster
+      metadata:
+        name: k0s-cluster
+      spec:
+        storage:
+          type: kine
+# Use default setup of SQLite
+#          kine:
+#            dataSource: "sqlite:///var/lib/k0s/db/state.db?more=rwc&_journal=WAL&cache=shared"
