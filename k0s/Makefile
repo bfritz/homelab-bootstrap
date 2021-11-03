@@ -34,6 +34,8 @@ install_k0sctl:
 
 build_cluster: cluster.yaml
 	k0sctl apply --disable-telemetry --config cluster.yaml
+	$(info Saving kubeconfig file to cluster_kubeconf.yaml ...)
+	k0sctl kubeconfig --disable-telemetry --config cluster.yaml > cluster_kubeconf.yaml
 
 cluster.yaml: cluster.yaml.in
 	K0S_CONTROLLER_IP=$(shell cd $(mkfile_dir); ./tf_controller_ip.sh) \
