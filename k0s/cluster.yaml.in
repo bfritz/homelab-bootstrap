@@ -29,3 +29,16 @@ spec:
 # Use default setup of SQLite
 #          kine:
 #            dataSource: "sqlite:///var/lib/k0s/db/state.db?more=rwc&_journal=WAL&cache=shared"
+        extensions:
+          helm:
+            repositories:
+            - name: argo-repo
+              url: https://argoproj.github.io/argo-helm
+            charts:
+            - name: argo-cd
+              chartname: argo-repo/argo-cd
+              version: "3.26.5"
+              values: |
+                dex:
+                  enabled: false
+              namespace: argocd
