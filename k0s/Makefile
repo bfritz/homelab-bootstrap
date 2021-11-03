@@ -4,7 +4,14 @@ K0SCTL_URL := https://github.com/k0sproject/k0sctl/releases/download/v$(K0SCTL_V
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
 
-.PHONY: all add_controller_host provision_controller ssh_controller install_k0sctl build_cluster
+.PHONY: \
+	all \
+	add_controller_host \
+	provision_controller \
+	ssh_controller \
+	install_k0sctl \
+	build_cluster \
+	__end
 
 all:
 
@@ -40,3 +47,5 @@ build_cluster: cluster.yaml
 cluster.yaml: cluster.yaml.in
 	K0S_CONTROLLER_IP=$(shell cd $(mkfile_dir); ./tf_controller_ip.sh) \
 	    gomplate -f cluster.yaml.in > cluster.yaml
+
+__end:
