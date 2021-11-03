@@ -1,10 +1,26 @@
+ARGOCD_VER := 2.1.6
+ARGOCD_CLI_URL := https://github.com/argoproj/argo-cd/releases/download/v$(ARGOCD_VER)/argocd-linux-amd64
+
 K0SCTL_VER := 0.11.4
 K0SCTL_URL := https://github.com/k0sproject/k0sctl/releases/download/v$(K0SCTL_VER)/k0sctl-linux-x64
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
 
-.PHONY: all add_controller_host provision_controller ssh_controller install_k0sctl build_cluster
+kubeconfig := cluster_kubeconf.yaml
+
+.PHONY: \
+	all \
+	add_controller_host \
+	provision_controller \
+	ssh_controller \
+	install_k0sctl \
+	build_cluster \
+	argocd_cli_install \
+	argocd_cli_login \
+	argocd_find_initial_admin_password \
+	argocd_find_service_name \
+	__end
 
 all:
 
@@ -34,9 +50,36 @@ install_k0sctl:
 
 build_cluster: cluster.yaml
 	k0sctl apply --disable-telemetry --config cluster.yaml
-	$(info Saving kubeconfig file to cluster_kubeconf.yaml ...)
-	k0sctl kubeconfig --disable-telemetry --config cluster.yaml > cluster_kubeconf.yaml
+	$(info Saving kubeconfig file to $(kubeconfig) ...)
+	k0sctl kubeconfig --disable-telemetry --config cluster.yaml > $(kubeconfig)
 
 cluster.yaml: cluster.yaml.in
 	K0S_CONTROLLER_IP=$(shell cd $(mkfile_dir); ./tf_controller_ip.sh) \
 	    gomplate -f cluster.yaml.in > cluster.yaml
+
+# Argo CD targets
+argocd_cli_install:
+	$(info Note: You may be prompted for sudo password to save `argocd` into `/usr/local/bin/` .)
+	@[ -e /usr/local/bin/argocd ] \
+		|| (curl -o /tmp/argocd -Lf $(ARGOCD_CLI_URL) && chmod 0755 /tmp/argocd && sudo mv /tmp/argocd /usr/local/bin/)
+	@argocd version
+
+argocd_cli_login: argocd_find_service_name
+	$(info Provide access with:)
+	$(info kubectl --kubeconfig $(kubeconfig) port-forward $(ARGOCD_SVC) -n argocd 8080:443)
+	argocd login localhost:8080 --insecure \
+		--username admin \
+		--password $(shell KUBECONFIG=$(kubeconfig) kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+
+argocd_find_initial_admin_password: argocd_find_service_name
+	$(info Access UI with:)
+	$(info kubectl --kubeconfig $(kubeconfig) port-forward $(ARGOCD_SVC) -n argocd 8080:443)
+	$(info Initial ArgoCD admin password is:)
+	@KUBECONFIG=$(kubeconfig) \
+		kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d ; echo
+
+argocd_find_service_name:
+	$(eval ARGOCD_SVC := $(shell kubectl --kubeconfig $(kubeconfig) -n argocd get service -l 'app.kubernetes.io/name=argocd-server' -o name))
+
+
+__end:
