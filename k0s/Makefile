@@ -20,6 +20,7 @@ kubeconfig := cluster_kubeconf.yaml
 	argocd_cli_login \
 	argocd_find_initial_admin_password \
 	argocd_find_service_name \
+	argocd_launch_apps \
 	__end
 
 all:
@@ -80,6 +81,9 @@ argocd_find_initial_admin_password: argocd_find_service_name
 
 argocd_find_service_name:
 	$(eval ARGOCD_SVC := $(shell kubectl --kubeconfig $(kubeconfig) -n argocd get service -l 'app.kubernetes.io/name=argocd-server' -o name))
+
+argocd_launch_apps:
+	ssh root@$(shell cd $(mkfile_dir); ./tf_controller_ip.sh) mkdir -p /var/lib/k0s/manifests/apps \&\& curl -sLo /var/lib/k0s/manifests/apps/apps.yaml https://raw.githubusercontent.com/bfritz/homelab-apps/main/apps.yaml
 
 
 __end:

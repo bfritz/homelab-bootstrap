@@ -42,3 +42,7 @@ spec:
                 dex:
                   enabled: false
               namespace: argocd
+            - name: argo-cd-applicationset
+              chartname: argo-repo/argocd-applicationset
+              version: "1.6.0"
+              namespace: argocd
