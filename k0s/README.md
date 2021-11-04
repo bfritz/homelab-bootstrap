@@ -11,6 +11,7 @@ Usage:
     make provision_controller
     # optional: make install_k0sctl    # to install x86_64 copy of k0sctl on build host
     make build_cluster
+    make argocd_launch_apps
 
 
 [1gb "nanode" instance]: https://www.linode.com/pricing/#compute-shared
