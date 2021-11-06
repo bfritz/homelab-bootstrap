@@ -36,6 +36,9 @@ cat <<EOF > /etc/awall/private/custom-services.json
     ],
     "kube-konnectivity": [
       { "proto": "tcp", "port": 8132 }
+    ],
+    "prom-node-exporter": [
+      { "proto": "tcp", "port": 9100 }
     ]
   }
 }
@@ -92,10 +95,10 @@ cat <<EOF > /etc/awall/optional/k8s.json
   "filter": [
     {
       "in": "internet",
+      "src": "\$MANAGEMENT_HOSTS",
       "out": "_fw",
-      "service": ["kube-api", "kube-konnectivity"],
-      "action": "accept",
-      "src": "\$MANAGEMENT_HOSTS"
+      "service": ["kube-api", "kube-konnectivity", "prom-node-exporter"],
+      "action": "accept"
     }
   ]
 }
