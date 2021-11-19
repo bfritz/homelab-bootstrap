@@ -37,10 +37,13 @@ spec:
             charts:
             - name: argo-cd
               chartname: argo-repo/argo-cd
-              version: "3.26.5"
+              version: "3.26.9"
               values: |
                 dex:
                   enabled: false
+                server:
+                  extraArgs:
+                  - --insecure
               namespace: argocd
             - name: argo-cd-applicationset
               chartname: argo-repo/argocd-applicationset
