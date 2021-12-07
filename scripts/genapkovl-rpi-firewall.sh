@@ -325,7 +325,7 @@ configure_installed_packages
 configure_syslog
 configure_chrony_as_server
 add_ssh_key
-add_vector 0.17.3 armv7-unknown-linux-musleabihf
+add_vector 0.18.1 armv7-unknown-linux-musleabihf
 configure_init_scripts
 add_customize_image_init_scripts
 install_overlays
