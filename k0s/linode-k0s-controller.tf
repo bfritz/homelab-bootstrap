@@ -3,8 +3,8 @@ provider "linode" {
 }
 
 resource "linode_instance" "k0s-controller" {
-  image           = "linode/alpine3.14"
-  label           = "k0s-controller-2021-11-02"
+  image           = "linode/alpine3.15"
+  label           = "k0s-controller-2021-12-06"
   group           = "Terraform"
   region          = "us-central"
   type            = "g6-nanode-1"
