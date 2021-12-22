@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 K0S_ARCH=amd64
-K0S_VER=1.22.4+k0s.2
+K0S_VER=1.22.5+k0s.0
 K0S_URL="https://github.com/k0sproject/k0s/releases/download/v$K0S_VER/k0s-v$K0S_VER-$K0S_ARCH"
 
 hostname="$1"
