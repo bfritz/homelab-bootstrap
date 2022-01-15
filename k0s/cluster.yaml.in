@@ -17,7 +17,7 @@ spec:
     role: worker
 {{- end }}
   k0s:
-    version: 1.22.5+k0s.0
+    version: 1.23.1+k0s.1
     config:
       apiVersion: k0s.k0sproject.io/v1beta1
       kind: Cluster
