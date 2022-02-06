@@ -37,8 +37,11 @@ spec:
             charts:
             - name: argo-cd
               chartname: argo-repo/argo-cd
-              version: "3.26.11"
+              version: "3.28.1"
               values: |
+                global:
+                  image:
+                    tag: "v2.1.9"
                 dex:
                   enabled: false
                 server:
@@ -47,5 +50,8 @@ spec:
               namespace: argocd
             - name: argo-cd-applicationset
               chartname: argo-repo/argocd-applicationset
-              version: "1.6.0"
+              version: "1.9.1"
               namespace: argocd
+              values: |
+                image:
+                  tag: "v0.3.0"
