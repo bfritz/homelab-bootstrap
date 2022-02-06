@@ -37,11 +37,11 @@ spec:
             charts:
             - name: argo-cd
               chartname: argo-repo/argo-cd
-              version: "3.28.1"
+              version: "3.33.3"
               values: |
                 global:
                   image:
-                    tag: "v2.1.9"
+                    tag: "v2.2.5"
                 dex:
                   enabled: false
                 server:
