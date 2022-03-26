@@ -36,22 +36,15 @@ spec:
               url: https://argoproj.github.io/argo-helm
             charts:
             - name: argo-cd
+              namespace: argocd
               chartname: argo-repo/argo-cd
-              version: "3.33.3"
+              version: "4.2.2"
               values: |
                 global:
                   image:
-                    tag: "v2.2.5"
+                    tag: "v2.3.2"
                 dex:
                   enabled: false
                 server:
                   extraArgs:
                   - --insecure
-              namespace: argocd
-            - name: argo-cd-applicationset
-              chartname: argo-repo/argocd-applicationset
-              version: "1.9.1"
-              namespace: argocd
-              values: |
-                image:
-                  tag: "v0.3.0"
