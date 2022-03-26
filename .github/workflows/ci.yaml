@@ -36,3 +36,20 @@ jobs:
 
       - name: list-images-content
         run: make list-images-content
+
+  # The bors bot should only merge if the full matrix of images build successfully.
+  # See:
+  # * https://forum.bors.tech/t/bors-with-github-workflows/426/3
+  # * https://github.com/taiki-e/pin-project/blob/v1.0.10/.github/workflows/ci.yml#L111-L129
+  # * https://github.com/rust-lang/crater/blob/9ab6f9697c901c4a44025cf0a39b73ad5b37d198/.github/workflows/bors.yml#L125-L149
+  end-success:
+    name: bors build finished
+    needs: build-images
+    runs-on: ubuntu-20.04
+    steps:
+      - name: mark as success
+        if: github.event_name == 'push' && success()
+        run: exit 0
+      - name: mark as failure
+        if: github.event_name == 'push' && !success()
+        run: exit 1
