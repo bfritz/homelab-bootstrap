@@ -7,3 +7,7 @@
 /.shellspec-quick.log
 /report/
 /coverage/
+
+# misc
+build*.log
+build*.log.?
