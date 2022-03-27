@@ -7,7 +7,7 @@
 Build scripts that use [qemu] and [alpine-chroot-install] to create custom
 Alpine images that run from RAM.  Images will include:
 
-* [x] rpi-basic - `armv7` image for basic Raspberry Pi 2, 3, or 4 host
+* [x] rpi-basic - `armhf` and `armv7` images for basic Raspberry Pi 0, 2, 3, or 4 host
 * [x] rpi-firewall - `armv7` image to run [awall], [dnsmasq], and [wireguard] on Raspberry Pi 4 as home router
 * [ ] rpi-snapcast - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
 * [x] k0s-worker - `x86_64` image to run as [k0s] worker node
@@ -27,16 +27,16 @@ to expose host metrics.
 
 ### rpi-basic
 
-Image for Raspberry Pi 2, 3, or 4 to act as a basic host.  Mostly used
-for adhoc testing.
+Image for Raspberry Pi Zero, 2, 3, or 4 to act as a basic host.
+Mostly used for adhoc testing.
 
 Pulls dhcp lease on wired interface and runs openssh server. `root`
 user does not have password and the only way to login with ssh is
 with key-based authenticateion.  Set `HL_SSH_KEY_URL` to the URL of
 a [ssh authorized_keys file] to pre-authorize one or more keys.
 
-Runs consoles on `tty1` and `ttyACM0`, the Pi's [built-in serial port].  Boot
-messages are logged to serial console.
+Runs consoles on `tty1` and `ttyACM0`, the Pi's
+[built-in serial port].  Boot messages are logged to serial console.
 
 ### rpi-firewall
 

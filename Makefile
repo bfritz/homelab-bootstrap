@@ -14,15 +14,18 @@ SHELLSPEC_TAG := 0.28.1
 
 all: build-images
 
-build-images: rpi-basic rpi-firewall k0s-worker
+build-images: rpi-basic-armhf rpi-basic-armv7 rpi-firewall k0s-worker-x86_64
 
-rpi-basic:
-	ARCH=armv7  make -f Makefile.images rpi-basic
+rpi-basic-armhf:
+	ARCH=armhf make -f Makefile.images rpi-basic
+
+rpi-basic-armv7:
+	ARCH=armv7 make -f Makefile.images rpi-basic
 
 rpi-firewall:
 	ARCH=armv7  make -f Makefile.images rpi-firewall
 
-k0s-worker:
+k0s-worker-x86_64:
 	ARCH=x86_64 make -f Makefile.images k0s-worker
 
 lint:
