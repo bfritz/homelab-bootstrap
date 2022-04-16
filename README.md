@@ -10,6 +10,7 @@ Alpine images that run from RAM.  Images will include:
 * [x] rpi-basic - `armhf` and `armv7` images for basic Raspberry Pi 0, 2, 3, or 4 host
 * [x] rpi-firewall - `armv7` image to run [awall], [dnsmasq], and [wireguard] on Raspberry Pi 4 as home router
 * [ ] rpi-snapcast - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
+* [x] rpi-k0s-controller - `armv7` image to run as [k0s] controller node
 * [x] k0s-worker - `x86_64` image to run as [k0s] worker node
 
 These [Alpine Linux] images run on my home network and are rather opinionated.
@@ -50,6 +51,11 @@ messages are logged to serial console.
 
 Replaces a similar setup with [Seagate DockStar] running [ArchLinux ARM] and
 [Shorewall] that served as my home router for many years.
+
+### rpi-k0s-controller
+
+[k0s] controller node for Raspberry Pi 4.  Intended as foundation for
+controllers that will be provisioned with [k0sctl].
 
 ### k0s-worker
 

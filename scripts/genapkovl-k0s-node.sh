@@ -1,8 +1,6 @@
 #!/bin/sh -e
 
-K0S_ARCH=amd64
 K0S_VER=1.23.5+k0s.0
-K0S_URL="https://github.com/k0sproject/k0s/releases/download/v$K0S_VER/k0s-v$K0S_VER-$K0S_ARCH"
 
 hostname="$1"
 
@@ -10,6 +8,19 @@ basedir="$(dirname "$0")"
 [ "$basedir" = "/bin" ] && basedir="./scripts" # shellspec workaround for $0 handling
 . "$basedir"/shared.sh
 
+k0s_arch() {
+	case "$ARCH" in
+		x86_64) echo "amd64" ;;
+		aarch64) echo "arm64" ;;
+		armv7) echo "arm" ;;
+		?*)  _err "Unsupported k0s architecture: $ARCH" ;;
+	esac
+}
+
+k0s_url() {
+	k0s_arch="$(k0s_arch)"
+	test -n "$k0s_arch" && echo "https://github.com/k0sproject/k0s/releases/download/v$K0S_VER/k0s-v$K0S_VER-$(k0s_arch)"
+}
 
 configure_installed_packages() {
 	apk_add \
@@ -70,18 +81,25 @@ install_k0s() {
 	[ -d "$tmp"/usr/local ] || mkdir --mode=0755 "$tmp"/usr/local
 	[ -d "$tmp"/usr/local/bin ] || mkdir --mode=0755 "$tmp"/usr/local/bin
 
-	echo "Downloading k0s from URL: $K0S_URL"
-	curl -Lf# $K0S_URL > "$tmp"/usr/local/bin/k0s
-	chmod 755 "$tmp"/usr/local/bin/k0s
+	k0s_url="$(k0s_url)"
+	if [ -n "$k0s_url" ]; then
+		echo "Downloading k0s from URL: $k0s_url"
+		curl -Lf# "$k0s_url" > "$tmp"/usr/local/bin/k0s
+		chmod 755 "$tmp"/usr/local/bin/k0s
+	else
+		return 1
+	fi
 }
 
+${__SOURCED__:+return} # stop here when sourced for shellspec
 
 tmp="$(mktemp -d)"
 trap cleanup EXIT
 
+hostname="${HL_HOSTNAME:-k0s-worker}"
 mkdir --mode=0755 "$tmp"/etc
 makefile root:root 0644 "$tmp"/etc/hostname <<EOF
-k0s-worker
+$hostname
 EOF
 
 configure_network

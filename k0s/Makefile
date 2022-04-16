@@ -44,7 +44,7 @@ provision_controller:
 	ssh root@$(shell cd $(mkfile_dir); ./tf_controller_ip.sh) sh -x /tmp/provision.sh
 
 ssh_controller:
-	ssh root@$(shell cd $(mkfile_dir); ./tf_controller_ip.sh)
+	ssh root@$(shell cd $(mkfile_dir); ./controller_ip.sh)
 
 install_k0sctl:
 	@[ -e /usr/local/bin/k0sctl ] || (curl -o /tmp/k0sctl -Lf $(K0SCTL_URL) && chmod 0755 /tmp/k0sctl && sudo mv /tmp/k0sctl /usr/local/bin/ && k0sctl version)
@@ -55,7 +55,7 @@ build_cluster: cluster.yaml
 	k0sctl kubeconfig --disable-telemetry --config cluster.yaml > $(kubeconfig)
 
 cluster.yaml: cluster.yaml.in
-	K0S_CONTROLLER_IP=$(shell cd $(mkfile_dir); ./tf_controller_ip.sh) \
+	K0S_CONTROLLER_IP=$(shell cd $(mkfile_dir); ./controller_ip.sh) \
 	    gomplate -f cluster.yaml.in > cluster.yaml
 
 # Argo CD targets
@@ -83,7 +83,7 @@ argocd_find_service_name:
 	$(eval ARGOCD_SVC := $(shell kubectl --kubeconfig $(kubeconfig) -n argocd get service -l 'app.kubernetes.io/name=argocd-server' -o name))
 
 argocd_launch_apps:
-	ssh root@$(shell cd $(mkfile_dir); ./tf_controller_ip.sh) mkdir -p /var/lib/k0s/manifests/apps \&\& curl -sLo /var/lib/k0s/manifests/apps/apps.yaml https://raw.githubusercontent.com/bfritz/homelab-apps/main/apps.yaml
+	ssh root@$(shell cd $(mkfile_dir); ./controller_ip.sh) mkdir -p /var/lib/k0s/manifests/apps \&\& curl -sLo /var/lib/k0s/manifests/apps/apps.yaml https://raw.githubusercontent.com/bfritz/homelab-apps/main/apps.yaml
 
 
 __end:

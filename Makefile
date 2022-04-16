@@ -25,6 +25,9 @@ rpi-basic-armv7:
 rpi-firewall:
 	ARCH=armv7  make -f Makefile.images rpi-firewall
 
+rpi-k0s-controller-armv7:
+	ARCH=armv7 HL_HOSTNAME=k0s-controller make -f Makefile.images rpi-k0s-controller
+
 k0s-worker-x86_64:
 	ARCH=x86_64 make -f Makefile.images k0s-worker
 
