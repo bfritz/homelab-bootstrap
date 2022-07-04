@@ -1,5 +1,9 @@
 #!/bin/sh -e
 
+_err() {
+    echo "$@" 1>&2
+}
+
 cleanup() {
         rm -rf "$tmp"
 }
