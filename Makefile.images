@@ -77,7 +77,7 @@ endif
 
 clone-aports:
 ifeq ($(wildcard $(WORK_DIR)/shared/aports/.git),)
-	git clone --shallow-since=2022-01-15 $(APORTS_REPO) $(WORK_DIR)/shared/aports
+	git clone --shallow-since=2022-01-15 --branch v20220316 $(APORTS_REPO) $(WORK_DIR)/shared/aports
 endif
 # Rewind before https://gitlab.alpinelinux.org/alpine/aports/-/commit/9a782440682903971ea57c457135531d26c6d7ab
 # caused `gzip: invalid magic` error during `rpi_blobs` step in `mkimage-armv7`.
