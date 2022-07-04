@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-K0S_VER=1.23.5+k0s.0
+K0S_VER=1.23.8+k0s.0
 
 hostname="$1"
 
