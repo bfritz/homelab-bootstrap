@@ -88,13 +88,8 @@ endif
 
 clone-aports:
 ifeq ($(wildcard $(WORK_DIR)/shared/aports/.git),)
-	git clone --shallow-since=2022-01-15 --branch v20220316 $(APORTS_REPO) $(WORK_DIR)/shared/aports
+	git clone --shallow-since=2022-07-01 $(APORTS_REPO) $(WORK_DIR)/shared/aports
 endif
-# Rewind before https://gitlab.alpinelinux.org/alpine/aports/-/commit/9a782440682903971ea57c457135531d26c6d7ab
-# caused `gzip: invalid magic` error during `rpi_blobs` step in `mkimage-armv7`.
-# Can likely be removed after upgrade to 3.16 (once it is released).
-	$(info Checking out aports commit $(APORTS_COMMIT) prior to rpi_blobs breakage.)
-	@git --git-dir="$(WORK_DIR)/shared/aports/.git" checkout $(APORTS_COMMIT) > /dev/null
 
 # Insert `--allow-untrusted` into the init script used to boostrap the live system
 # from the initramfs.  Useful for debugging errors...like why `/etc/inittab` is missing.
