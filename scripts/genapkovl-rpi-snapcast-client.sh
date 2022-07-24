@@ -87,6 +87,7 @@ EOF
 
 configure_network
 configure_wifi
+set_hostname_with_udhcpc
 configure_installed_packages
 configure_chrony_as_client
 configure_syslog

@@ -165,6 +165,17 @@ EOF
     rc_add wpa_supplicant default
 }
 
+
+# DHCP assigned hostname should override hostname in image
+set_hostname_with_udhcpc() {
+    [ -d "$tmp"/etc ] || mkdir --mode=0755 "$tmp"/etc
+    [ -d "$tmp"/etc/udhcpc ] || mkdir --mode=0755 "$tmp"/etc/udhcpc
+    [ -d "$tmp"/etc/udhcpc/post-bound ] || mkdir --mode=0755 "$tmp"/etc/udhcpc/post-bound
+    makefile root:root 0755 "$tmp"/etc/udhcpc/post-bound/hostname <<EOF
+[ -n "\$hostname" ] && hostname "\$hostname"
+EOF
+}
+
 install_overlays() {
     if [ -n "$HL_OVERLAY_DIR" ] && [ -d "$HL_OVERLAY_DIR" ]; then
         for T in "$HL_OVERLAY_DIR"/*.tgz; do

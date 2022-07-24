@@ -103,6 +103,7 @@ $hostname
 EOF
 
 configure_network
+set_hostname_with_udhcpc
 configure_installed_packages
 configure_chrony_as_client
 add_ssh_key
