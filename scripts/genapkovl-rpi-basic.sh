@@ -85,6 +85,7 @@ rpi-basic
 EOF
 
 configure_network
+set_hostname_with_udhcpc
 log_martians
 configure_installed_packages
 configure_chrony_as_client
