@@ -7,11 +7,11 @@
 Build scripts that use [qemu] and [alpine-chroot-install] to create custom
 Alpine images that run from RAM.  Images will include:
 
+* [x] k0s-worker - `x86_64` image to run as [k0s] worker node
 * [x] rpi-basic - `armhf` and `armv7` images for basic Raspberry Pi 0, 2, 3, or 4 host
 * [x] rpi-firewall - `armv7` image to run [awall], [dnsmasq], and [wireguard] on Raspberry Pi 4 as home router
 * [ ] rpi-snapcast - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
 * [x] rpi-k0s-controller - `armv7` image to run as [k0s] controller node
-* [x] k0s-worker - `x86_64` image to run as [k0s] worker node
 
 These [Alpine Linux] images run on my home network and are rather opinionated.
 No image tarballs are published because it is unlikely they would be generally
@@ -25,6 +25,12 @@ and are the main reason for publishing.
 
 All images run [chrony] for NTP time sync, sshd, and the Prometheus [node-exporter]
 to expose host metrics.
+
+### k0s-worker
+
+Image for x86_64 machines that will be provisioned to run the [k0s] distribution
+of Kubernetes.  Intended as the foundation for kubernetes worker nodes that will
+be provisioned with [k0sctl].
 
 ### rpi-basic
 
@@ -56,13 +62,6 @@ Replaces a similar setup with [Seagate DockStar] running [ArchLinux ARM] and
 
 [k0s] controller node for Raspberry Pi 4.  Intended as foundation for
 controllers that will be provisioned with [k0sctl].
-
-### k0s-worker
-
-Image for x86_64 machines that will be provisioned to run the [k0s] distribution
-of Kubernetes.  Intended as the foundation for kubernetes worker nodes that will
-be provisioned with [k0sctl].
-
 
 
 ## Prior Art and Inspiration
