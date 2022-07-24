@@ -32,6 +32,7 @@ jobs:
           - rpi-basic-armv7
           - rpi-firewall-armv7
           - rpi-k0s-controller-armv7
+          - rpi-snapcast-client-armhf
 
     steps:
       - uses: actions/checkout@v2

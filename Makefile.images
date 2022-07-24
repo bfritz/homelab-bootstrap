@@ -49,6 +49,16 @@ rpi-k0s-controller: build-user
 		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
 	$(WORK_DIR)/$(ARCH)/destroy --remove
 
+rpi-snapcast-client: build-user # chroot-initramfs-hack
+	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
+		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
+		--arch $(ARCH) \
+		--profile rpi_snapcast_client \
+		--outdir $(abspath $(WORK_DIR))/shared \
+		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
+		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
+	$(WORK_DIR)/$(ARCH)/destroy --remove
+
 chroot: clone-aci populate-shared
 	sudo SUDO_USER=$(BUILD_USER) \
 		$(WORK_DIR)/aci/alpine-chroot-install \

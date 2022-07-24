@@ -132,6 +132,39 @@ EOF
     [ -d "$tmp"/var/lib/vector ] || mkdir --mode=0755 "$tmp"/var/lib/vector
 }
 
+# use $HL_NTP_SERVER, if set, as the NTP server or pool.ntp.org otherwise
+configure_chrony_as_client() {
+        [ -d "$tmp"/etc/chrony ] || mkdir --mode=0755 "$tmp"/etc/chrony
+        makefile root:root 0644 "$tmp"/etc/chrony/chrony.conf <<EOF
+pool ${HL_NTP_SERVER:-pool.ntp.org} iburst
+initstepslew 10 ${HL_NTP_SERVER:-pool.ntp.org}
+driftfile /var/lib/chrony/chrony.drift
+rtcsync
+cmdport 0
+EOF
+}
+
+# use $HL_WIFI_SSID and $HL_WIFI_PSK to create /etc/wpa_supplicant/wpa_supplicant.conf
+configure_wifi() {
+    if [ -z "$HL_WIFI_SSID" ] || [ -z "$HL_WIFI_PSK" ]; then
+        _err "Set environment variables HL_WIFI_SSID and HL_WIFI_PSK for WiFi configuration."
+        return 1
+    fi
+
+    [ -d "$tmp"/etc ] || mkdir --mode=0755 "$tmp"/etc
+    [ -d "$tmp"/etc/wpa_supplicant ] || mkdir --mode=0755 "$tmp"/etc/wpa_supplicant
+
+    cat <<EOF > "$tmp"/etc/wpa_supplicant/wpa_supplicant.conf
+network={
+    ssid="$HL_WIFI_SSID"
+    psk=$HL_WIFI_PSK
+}
+EOF
+    chmod 0600 "$tmp"/etc/wpa_supplicant/wpa_supplicant.conf
+    apk_add wpa_supplicant
+    rc_add wpa_supplicant default
+}
+
 install_overlays() {
     if [ -n "$HL_OVERLAY_DIR" ] && [ -d "$HL_OVERLAY_DIR" ]; then
         for T in "$HL_OVERLAY_DIR"/*.tgz; do
