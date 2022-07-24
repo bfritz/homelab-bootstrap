@@ -32,6 +32,7 @@ jobs:
           - rpi-basic-armv7
           - rpi-firewall-armv7
           - rpi-k0s-controller-armv7
+          - rpi-ruuvi-armhf
           - rpi-snapcast-client-armhf
 
     steps:

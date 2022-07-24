@@ -30,6 +30,9 @@ rpi-firewall-armv7:
 rpi-k0s-controller-armv7:
 	ARCH=armv7 HL_HOSTNAME=k0s-controller make -f Makefile.images rpi-k0s-controller
 
+rpi-ruuvi-armhf:
+	ARCH=armhf make -f Makefile.images rpi-ruuvi
+
 rpi-snapcast-client-armhf:
 	ARCH=armhf make -f Makefile.images rpi-snapcast-client
 
