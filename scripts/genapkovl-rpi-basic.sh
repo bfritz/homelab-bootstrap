@@ -87,6 +87,7 @@ EOF
 configure_network
 log_martians
 configure_installed_packages
+configure_chrony_as_client
 configure_syslog
 add_ssh_key
 configure_init_scripts

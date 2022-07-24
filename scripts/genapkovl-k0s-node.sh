@@ -104,6 +104,7 @@ EOF
 
 configure_network
 configure_installed_packages
+configure_chrony_as_client
 add_ssh_key
 configure_init_scripts
 install_k0s
