@@ -32,11 +32,16 @@ jobs:
           - rpi-basic-armv7
           - rpi-firewall-armv7
           - rpi-k0s-controller-armv7
+          - rpi-snapcast-client-armhf
 
     steps:
       - uses: actions/checkout@v2
 
       - name: build ${{ matrix.image }}
+        env:
+          # from `wpa_passphrase test_essid supersecret`
+          HL_WIFI_SSID: "test_essid"
+          HL_WIFI_PSK: "40faa8d23b3cf02b10e0f06cd69e179dfad59db25761909c3ecfdaa49bad53d0"
         run: make ${{ matrix.image }}
 
       - name: list-images-content

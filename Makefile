@@ -30,6 +30,9 @@ rpi-firewall-armv7:
 rpi-k0s-controller-armv7:
 	ARCH=armv7 HL_HOSTNAME=k0s-controller make -f Makefile.images rpi-k0s-controller
 
+rpi-snapcast-client-armhf:
+	ARCH=armhf make -f Makefile.images rpi-snapcast-client
+
 lint:
 	shellcheck --exclude=SC1090,SC1091 scripts/shared.sh scripts/genapkovl-*.sh
 

@@ -5,12 +5,12 @@
 [![Bors enabled](https://bors.tech/images/badge_small.svg)](https://app.bors.tech/repositories/38911)
 
 Build scripts that use [qemu] and [alpine-chroot-install] to create custom
-Alpine images that run from RAM.  Images will include:
+Alpine images that run from RAM.  Images include:
 
 * [x] k0s-worker - `x86_64` image to run as [k0s] worker node
 * [x] rpi-basic - `armhf` and `armv7` images for basic Raspberry Pi 0, 2, 3, or 4 host
 * [x] rpi-firewall - `armv7` image to run [awall], [dnsmasq], and [wireguard] on Raspberry Pi 4 as home router
-* [ ] rpi-snapcast - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
+* [x] rpi-snapcast-client - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
 * [x] rpi-k0s-controller - `armv7` image to run as [k0s] controller node
 
 These [Alpine Linux] images run on my home network and are rather opinionated.
@@ -62,6 +62,13 @@ Replaces a similar setup with [Seagate DockStar] running [ArchLinux ARM] and
 
 [k0s] controller node for Raspberry Pi 4.  Intended as foundation for
 controllers that will be provisioned with [k0sctl].
+
+### rpi-snapcast-client
+
+Minimal image with the [snapcast] client software installed.  Intended
+to run on Raspberry Pi Zero W connected to amplifer for streaming audio.
+Set `HL_SNAPCAST_SERVER` to the hostname of the snapcast server the
+client should connect to at boot.
 
 
 ## Prior Art and Inspiration
