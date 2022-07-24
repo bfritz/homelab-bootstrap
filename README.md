@@ -7,11 +7,12 @@
 Build scripts that use [qemu] and [alpine-chroot-install] to create custom
 Alpine images that run from RAM.  Images include:
 
-* [x] k0s-worker - `x86_64` image to run as [k0s] worker node
-* [x] rpi-basic - `armhf` and `armv7` images for basic Raspberry Pi 0, 2, 3, or 4 host
-* [x] rpi-firewall - `armv7` image to run [awall], [dnsmasq], and [wireguard] on Raspberry Pi 4 as home router
-* [x] rpi-snapcast-client - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
-* [x] rpi-k0s-controller - `armv7` image to run as [k0s] controller node
+* k0s-worker - `x86_64` image to run as [k0s] worker node
+* rpi-basic - `armhf` and `armv7` images for basic Raspberry Pi 0, 2, 3, or 4 host
+* rpi-firewall - `armv7` image to run [awall], [dnsmasq], and [wireguard] on Raspberry Pi 4 as home router
+* rpi-k0s-controller - `armv7` image to run as [k0s] controller node
+* rpi-ruuvi - `armhf` image to listen for [Ruuvi Tag] data on a Raspberry Pi Zero W
+* rpi-snapcast-client - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
 
 These [Alpine Linux] images run on my home network and are rather opinionated.
 No image tarballs are published because it is unlikely they would be generally
@@ -88,6 +89,7 @@ client should connect to at boot.
 [k0s]: https://k0sproject.io/
 [k0sctl]: https://github.com/k0sproject/k0sctl
 [node-exporter]: https://prometheus.io/docs/guides/node-exporter/
+[ruuvi tag]: https://ruuvi.com/ruuvitag/
 [seagate dockstar]: https://www.seagate.com/support/external-hard-drives/network-storage/dockstar/
 [shorewall]: https://shorewall.org/
 [snapcast]: https://github.com/badaix/snapcast#readme
