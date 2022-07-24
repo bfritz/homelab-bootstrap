@@ -15,20 +15,20 @@ all: build-images
 
 build-images: rpi-basic-armhf rpi-basic-armv7 rpi-firewall k0s-worker-x86_64
 
+k0s-worker-x86_64:
+	ARCH=x86_64 make -f Makefile.images k0s-worker
+
 rpi-basic-armhf:
 	ARCH=armhf make -f Makefile.images rpi-basic
 
 rpi-basic-armv7:
 	ARCH=armv7 make -f Makefile.images rpi-basic
 
-rpi-firewall:
+rpi-firewall-armv7:
 	ARCH=armv7  make -f Makefile.images rpi-firewall
 
 rpi-k0s-controller-armv7:
 	ARCH=armv7 HL_HOSTNAME=k0s-controller make -f Makefile.images rpi-k0s-controller
-
-k0s-worker-x86_64:
-	ARCH=x86_64 make -f Makefile.images k0s-worker
 
 lint:
 	shellcheck --exclude=SC1090,SC1091 scripts/shared.sh scripts/genapkovl-*.sh
