@@ -6,7 +6,18 @@ ifneq ($(wildcard $(WORK_DIR)/$(ARCH)),)
 endif
 	rm -rf $(WORK_DIR)
 
-rpi-basic: chroot build-user # chroot-initramfs-hack
+k0s-worker: build-user
+	HL_OVERLAY_DIR=$(abspath $(WORK_DIR))/shared/overlays \
+	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
+		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
+		--arch $(ARCH) \
+		--profile k0s_worker \
+		--outdir $(abspath $(WORK_DIR))/shared \
+		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
+		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
+	$(WORK_DIR)/$(ARCH)/destroy --remove
+
+rpi-basic: build-user # chroot-initramfs-hack
 	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
 		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
 		--arch $(ARCH) \
@@ -16,7 +27,7 @@ rpi-basic: chroot build-user # chroot-initramfs-hack
 		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
 	$(WORK_DIR)/$(ARCH)/destroy --remove
 
-rpi-firewall: chroot build-user # chroot-initramfs-hack
+rpi-firewall: build-user # chroot-initramfs-hack
 	HL_OVERLAY_DIR=$(abspath $(WORK_DIR))/shared/overlays \
 	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
 		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
@@ -33,17 +44,6 @@ rpi-k0s-controller: build-user
 		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
 		--arch $(ARCH) \
 		--profile rpi_k0s_controller \
-		--outdir $(abspath $(WORK_DIR))/shared \
-		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
-		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
-	$(WORK_DIR)/$(ARCH)/destroy --remove
-
-k0s-worker: build-user
-	HL_OVERLAY_DIR=$(abspath $(WORK_DIR))/shared/overlays \
-	$(WORK_DIR)/$(ARCH)/enter-chroot -u $(BUILD_USER) \
-		$(abspath $(WORK_DIR))/shared/aports/scripts/mkimage.sh \
-		--arch $(ARCH) \
-		--profile k0s_worker \
 		--outdir $(abspath $(WORK_DIR))/shared \
 		--repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/main \
 		--extra-repository https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/community
