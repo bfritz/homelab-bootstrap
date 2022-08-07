@@ -14,9 +14,9 @@ SHELLSPEC_TAG := 0.28.1
 	build-images \
 	k0s-worker-x86_64 \
 	rpi-basic-armhf \
-	rpi-basic-armv7 \
-	rpi-firewall-armv7 \
-	rpi-k0s-controller-armv7 \
+	rpi-basic-aarch64 \
+	rpi-firewall-aarch64 \
+	rpi-k0s-controller-aarch64 \
 	rpi-ruuvi-armhf \
 	rpi-snapcast-client-armhf \
 	lint \
@@ -28,9 +28,9 @@ all: build-images
 build-images: \
 	k0s-worker-x86_64 \
 	rpi-basic-armhf \
-	rpi-basic-armv7 \
-	rpi-firewall-armv7 \
-	rpi-k0s-controller-armv7 \
+	rpi-basic-aarch64 \
+	rpi-firewall-aarch64 \
+	rpi-k0s-controller-aarch64 \
 	rpi-ruuvi-armhf \
 	rpi-snapcast-client-armhf
 
@@ -40,14 +40,14 @@ k0s-worker-x86_64:
 rpi-basic-armhf:
 	ARCH=armhf make -f Makefile.images rpi-basic
 
-rpi-basic-armv7:
-	ARCH=armv7 make -f Makefile.images rpi-basic
+rpi-basic-aarch64:
+	ARCH=aarch64 make -f Makefile.images rpi-basic
 
-rpi-firewall-armv7:
-	ARCH=armv7 make -f Makefile.images rpi-firewall
+rpi-firewall-aarch64:
+	ARCH=aarch64 make -f Makefile.images rpi-firewall
 
-rpi-k0s-controller-armv7:
-	ARCH=armv7 HL_HOSTNAME=k0s-controller make -f Makefile.images rpi-k0s-controller
+rpi-k0s-controller-aarch64:
+	ARCH=aarch64 HL_HOSTNAME=k0s-controller make -f Makefile.images rpi-k0s-controller
 
 rpi-ruuvi-armhf:
 	ARCH=armhf make -f Makefile.images rpi-ruuvi
@@ -79,6 +79,7 @@ list-images-content: $(WORK_DIR)/shared/alpine-*
 clean:
 	ARCH=armhf make -f Makefile.images clean
 	ARCH=armv7 make -f Makefile.images clean
+	ARCH=aarch64 make -f Makefile.images clean
 	ARCH=x86_64 make -f Makefile.images clean
 
 __end:
