@@ -29,9 +29,9 @@ jobs:
         image:
           - k0s-worker-x86_64
           - rpi-basic-armhf
-          - rpi-basic-armv7
-          - rpi-firewall-armv7
-          - rpi-k0s-controller-armv7
+          - rpi-basic-aarch64
+          - rpi-firewall-aarch64
+          - rpi-k0s-controller-aarch64
           - rpi-ruuvi-armhf
           - rpi-snapcast-client-armhf
 
