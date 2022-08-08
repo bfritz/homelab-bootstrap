@@ -8,6 +8,10 @@ basedir="$(dirname "$0")"
 [ "$basedir" = "/bin" ] && basedir="./scripts" # shellspec workaround for $0 handling
 . "$basedir"/shared.sh
 
+is_controller() {
+	test "$HL_HOSTNAME" = "k0s-controller"
+}
+
 k0s_arch() {
 	case "$ARCH" in
 		x86_64) echo "amd64" ;;
@@ -32,6 +36,9 @@ configure_installed_packages() {
 		iptables \
 		nfs-utils \
 
+	if is_controller; then
+		apk_add prometheus-node-exporter
+	fi
 }
 
 configure_network() {
@@ -73,6 +80,10 @@ configure_init_scripts() {
 	rc_add chronyd default
 	rc_add sshd default
 	rc_add cgroups default
+
+	if is_controller; then
+		rc_add node-exporter default
+	fi
 }
 
 install_k0s() {

@@ -19,6 +19,16 @@ profile_rpi_k0s_controller() {
     profile_abbrev="k0s_controller"
     title="Alpine for k0s controller node (RPi)"
     desc="Standard Alpine image ready to be provisioned as k0s controller node, likely with k0sctl.  Runs from RAM."
-    apks="$apks chrony openssh-server findutils coreutils curl iptables nfs-utils atop"
+    apks="$apks
+        chrony
+        openssh-server
+        findutils
+        coreutils
+        curl
+        iptables
+        nfs-utils
+        atop
+        prometheus-node-exporter
+    "
     apkovl="genapkovl-k0s-node.sh"
 }
