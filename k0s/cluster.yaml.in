@@ -8,6 +8,8 @@ spec:
       address: {{ .Env.K0S_CONTROLLER_IP }}
       user: root
     role: controller
+    installFlags:
+    - --enable-metrics-scraper
   {{/* Must be a more concise way, but `(net.ParseIPPrefix ...).Range` seemed to be a dead end. */}}
   # 172.22.18.16/29 hosts
 {{- range $worker_ip := slice "172.22.18.17" "172.22.18.18" "172.22.18.19" "172.22.18.20" "172.22.18.21" "172.22.18.22" }}
