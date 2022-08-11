@@ -1,4 +1,4 @@
-ARGOCD_VER := 2.3.2
+ARGOCD_VER := 2.4.8
 ARGOCD_CLI_URL := https://github.com/argoproj/argo-cd/releases/download/v$(ARGOCD_VER)/argocd-linux-amd64
 
 K0SCTL_VER := 0.13.0
