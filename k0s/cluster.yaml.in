@@ -40,11 +40,11 @@ spec:
             - name: argo-cd
               namespace: argocd
               chartname: argo-repo/argo-cd
-              version: "4.2.2"
+              version: "4.10.5"
               values: |
                 global:
                   image:
-                    tag: "v2.3.2"
+                    tag: "v2.4.8"
                 dex:
                   enabled: false
                 server:
