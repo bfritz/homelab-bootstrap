@@ -1,7 +1,7 @@
 ARGOCD_VER := 2.4.11
 ARGOCD_CLI_URL := https://github.com/argoproj/argo-cd/releases/download/v$(ARGOCD_VER)/argocd-linux-amd64
 
-K0SCTL_VER := 0.13.0
+K0SCTL_VER := 0.14.0
 K0SCTL_URL := https://github.com/k0sproject/k0sctl/releases/download/v$(K0SCTL_VER)/k0sctl-linux-x64
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
