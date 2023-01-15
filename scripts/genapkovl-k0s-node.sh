@@ -80,6 +80,7 @@ configure_init_scripts() {
 	rc_add chronyd default
 	rc_add sshd default
 	rc_add cgroups default
+	rc_add machine-id default
 
 	if is_controller; then
 		rc_add node-exporter default
