@@ -87,6 +87,56 @@ configure_init_scripts() {
 	fi
 }
 
+add_prepare_for_k8s_init_script() {
+	if is_controller; then
+		worker_only_calls=""
+	else
+		worker_only_calls="share_sys"
+	fi
+
+	mkdir -p "$tmp"/etc/init.d
+	makefile root:root 0755 "$tmp"/etc/init.d/prepare_for_k8s <<EOF
+#!/sbin/openrc-run
+
+description="Prepare host for running as kubernetes worker or controller node"
+
+mount_k8s_data_partitions() {
+	ebegin "Mounting k8s data partitions"
+	k8s_data_part="\$(blkid /dev/[hsv]d?? /dev/nvme?n?p? | sed -n '/LABEL=.k8s_data/p' | awk -F: '{print \$1}' | sort | head -n1)"
+
+	if [ -z "\$k8s_data_part" ]; then
+		eend 0 "no partitions labeled for k8s data"
+		return 0
+	fi
+
+	einfo "Found k8s data partition at \$k8s_data_part .  Mounting at /data ."
+	mkdir -p /data
+	modprobe ext4 || true
+	mount "\$k8s_data_part" /data
+
+	for dir in /run/k0s/containerd /var/lib/k0s; do
+		mkdir -p \$dir
+		mkdir -p /data\$dir
+		mount -o bind /data\$dir \$dir
+		einfo "\$dir mounted as persistent volume."
+	done
+	eend 0
+}
+
+share_sys() {
+	einfo "Sharing /sys with containers for node-exporter"
+	mount --make-shared /
+	mount --make-shared /sys
+}
+
+start() {
+	mount_k8s_data_partitions
+	$worker_only_calls
+}
+EOF
+	rc_add prepare_for_k8s boot
+}
+
 install_k0s() {
 	# install k0s
 	[ -d "$tmp"/usr ] || mkdir --mode=0755 "$tmp"/usr
@@ -120,6 +170,7 @@ configure_installed_packages
 configure_chrony_as_client
 add_ssh_key
 configure_init_scripts
+add_prepare_for_k8s_init_script
 install_k0s
 
 tar -c -C "$tmp" etc root usr/local | gzip -9n > "$hostname".apkovl.tar.gz
