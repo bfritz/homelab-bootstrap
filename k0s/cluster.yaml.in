@@ -1,7 +1,7 @@
 apiVersion: k0sctl.k0sproject.io/v1beta1
 kind: Cluster
 metadata:
-  name: k0s-cluster
+  name: k0s-lab
 spec:
   hosts:
   - ssh:
@@ -24,8 +24,12 @@ spec:
       apiVersion: k0s.k0sproject.io/v1beta1
       kind: Cluster
       metadata:
-        name: k0s-cluster
+        name: k0s-lab
       spec:
+        network:
+          kubeProxy:
+            disabled: true
+          provider: custom
         storage:
           type: kine
 # Use default setup of SQLite
@@ -36,12 +40,27 @@ spec:
             repositories:
             - name: argo-repo
               url: https://argoproj.github.io/argo-helm
+            - name: cilium
+              url: https://helm.cilium.io
             charts:
-            - name: argo-cd
+            - name: a-cilium # a- prefix to run first, before argocd which cannot helm install without a CNI plugin
+              namespace: kube-system
+              chartname: cilium/cilium
+              version: "1.12.6"
+              values: |
+                k8sServiceHost: {{ .Env.K0S_CONTROLLER_IP }}
+                k8sServicePort: 6443
+                encryption:
+                  nodeEncryption: false
+                kubeProxyReplacement: "strict"
+                kubeProxyReplacementHealthzBindAddr: "0.0.0.0:10256"
+                tunnel: vxlan
+            - name: z-argo-cd
               namespace: argocd
               chartname: argo-repo/argo-cd
               version: "5.16.2"
               values: |
+                fullnameOverride: argocd
                 global:
                   image:
                     tag: "v2.5.4"

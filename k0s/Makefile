@@ -1,6 +1,9 @@
 ARGOCD_VER := 2.5.4
 ARGOCD_CLI_URL := https://github.com/argoproj/argo-cd/releases/download/v$(ARGOCD_VER)/argocd-linux-amd64
 
+CILIUM_CLI_VER := 0.12.12
+CILIUM_CLI_URL := https://github.com/cilium/cilium-cli/releases/download/v$(CILIUM_CLI_VER)/cilium-linux-amd64.tar.gz
+
 K0SCTL_VER := 0.15.0
 K0SCTL_URL := https://github.com/k0sproject/k0sctl/releases/download/v$(K0SCTL_VER)/k0sctl-linux-x64
 
@@ -14,6 +17,7 @@ kubeconfig := cluster_kubeconf.yaml
 	add_controller_host \
 	provision_controller \
 	ssh_controller \
+	install_cilium_cli \
 	install_k0sctl \
 	build_cluster \
 	argocd_cli_install \
@@ -45,6 +49,9 @@ provision_controller:
 
 ssh_controller:
 	ssh root@$(shell cd $(mkfile_dir); ./controller_ip.sh)
+
+install_cilium_cli:
+	@[ -e /usr/local/bin/cilium ] || (curl -o /tmp/cilium.tgz -Lf $(CILIUM_CLI_URL) && sudo tar -C /usr/local/bin -xzf /tmp/cilium.tgz cilium && cilium version)
 
 install_k0sctl:
 	@[ -e /usr/local/bin/k0sctl ] || (curl -o /tmp/k0sctl -Lf $(K0SCTL_URL) && chmod 0755 /tmp/k0sctl && sudo mv /tmp/k0sctl /usr/local/bin/ && k0sctl version)
