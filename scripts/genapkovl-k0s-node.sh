@@ -91,7 +91,7 @@ add_prepare_for_k8s_init_script() {
 	if is_controller; then
 		worker_only_calls=""
 	else
-		worker_only_calls="share_sys"
+		worker_only_calls="$(printf "share_sys\n\tsetup_for_cilium")"
 	fi
 
 	mkdir -p "$tmp"/etc/init.d
@@ -127,6 +127,17 @@ share_sys() {
 	einfo "Sharing /sys with containers for node-exporter"
 	mount --make-shared /
 	mount --make-shared /sys
+}
+
+setup_for_cilium() {
+	einfo "Mounting /sys/fs/bpf and sharing with containers for Cilium"
+	mount bpffs -t bpf /sys/fs/bpf
+	mount --make-shared /sys/fs/bpf
+
+	einfo "Creating /run/cilium/cgroupv2 and sharing with containers for Cilium"
+	mkdir -p /run/cilium/cgroupv2
+	mount -t cgroup2 none /run/cilium/cgroupv2
+	mount --make-shared /run/cilium/cgroupv2
 }
 
 start() {
