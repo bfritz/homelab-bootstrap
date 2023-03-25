@@ -23,6 +23,7 @@ profile_rpi_gem() {
 		wireless-tools
 		wpa_supplicant
 		atop
+		picocom
 		tmux
 "
 	apkovl="genapkovl-rpi-gem.sh"
