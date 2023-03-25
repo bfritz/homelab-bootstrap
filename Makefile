@@ -16,6 +16,7 @@ SHELLSPEC_TAG := 0.28.1
 	rpi-basic-armhf \
 	rpi-basic-aarch64 \
 	rpi-firewall-aarch64 \
+	rpi-gem-armhf \
 	rpi-k0s-controller-aarch64 \
 	rpi-ruuvi-armhf \
 	rpi-snapcast-client-armhf \
@@ -30,6 +31,7 @@ build-images: \
 	rpi-basic-armhf \
 	rpi-basic-aarch64 \
 	rpi-firewall-aarch64 \
+	rpi-gem-armhf \
 	rpi-k0s-controller-aarch64 \
 	rpi-ruuvi-armhf \
 	rpi-snapcast-client-armhf
@@ -45,6 +47,9 @@ rpi-basic-aarch64:
 
 rpi-firewall-aarch64:
 	ARCH=aarch64 make -f Makefile.images rpi-firewall
+
+rpi-gem-armhf:
+	ARCH=armhf make -f Makefile.images rpi-gem
 
 rpi-k0s-controller-aarch64:
 	ARCH=aarch64 HL_HOSTNAME=k0s-controller make -f Makefile.images rpi-k0s-controller

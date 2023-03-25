@@ -10,6 +10,7 @@ Alpine images that run from RAM.  Images include:
 * k0s-worker - `x86_64` image to run as [k0s] worker node
 * rpi-basic - `armhf` and `armv7` images for basic Raspberry Pi 0, 2, 3, or 4 host
 * rpi-firewall - `armv7` image to run [awall], [dnsmasq], and [wireguard] on Raspberry Pi 4 as home router
+* rpi-gem - `armhf` image to bridge [GreenEye Monitor] to time-series database using Raspberry Pi Zero W
 * rpi-k0s-controller - `armv7` image to run as [k0s] controller node
 * rpi-ruuvi - `armhf` image to listen for [Ruuvi Tag] data on a Raspberry Pi Zero W
 * rpi-snapcast-client - `armhf` image to run [snapcast] on a Raspberry Pi Zero W
@@ -59,6 +60,12 @@ messages are logged to serial console.
 Replaces a similar setup with [Seagate DockStar] running [ArchLinux ARM] and
 [Shorewall] that served as my home router for many years.
 
+### rpi-gem
+
+Minimal image intended to bridge [GreenEye Monitor] from Brultech Research
+to home network using Raspberry Pi Zero W.  Connection from Pi to GEM is
+via USB-to-RS232 dongle.
+
 ### rpi-k0s-controller
 
 [k0s] controller node for Raspberry Pi 4.  Intended as foundation for
@@ -86,6 +93,7 @@ client should connect to at boot.
 [built-in serial port]: https://pinout.xyz/pinout/uart
 [chrony]: https://chrony.tuxfamily.org/
 [dnsmasq]: https://thekelleys.org.uk/dnsmasq/doc.html
+[greeneye monitor]: https://www.brultech.com/greeneye/
 [k0s]: https://k0sproject.io/
 [k0sctl]: https://github.com/k0sproject/k0sctl
 [node-exporter]: https://prometheus.io/docs/guides/node-exporter/
