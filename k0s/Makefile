@@ -1,4 +1,4 @@
-ARGOCD_VER := 2.5.4
+ARGOCD_VER := 2.5.15
 ARGOCD_CLI_URL := https://github.com/argoproj/argo-cd/releases/download/v$(ARGOCD_VER)/argocd-linux-amd64
 
 CILIUM_CLI_VER := 0.12.12
