@@ -1,6 +1,6 @@
 export ACI_REPO := https://github.com/alpinelinux/alpine-chroot-install.git
 export ACI_TAG := v0.14.0
-export ALPINE_VERSION := 3.17
+export ALPINE_VERSION := 3.18
 export APORTS_REPO := https://github.com/alpinelinux/aports.git
 export BUILD_USER := imagebuilder
 export WORK_DIR := bootstrap
