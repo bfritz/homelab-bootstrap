@@ -132,7 +132,8 @@ EOF
     [ -d "$tmp"/var/lib/vector ] || mkdir --mode=0755 "$tmp"/var/lib/vector
 }
 
-# use $HL_NTP_SERVER, if set, as the NTP server or pool.ntp.org otherwise
+# Use $HL_NTP_SERVER, if set, as the NTP server or pool.ntp.org otherwise.
+# Most targets lack real-time clocks, so force clock reset after boot when time is obviously wrong.
 configure_chrony_as_client() {
         [ -d "$tmp"/etc/chrony ] || mkdir --mode=0755 "$tmp"/etc/chrony
         makefile root:root 0644 "$tmp"/etc/chrony/chrony.conf <<EOF
@@ -142,7 +143,40 @@ driftfile /var/lib/chrony/chrony.drift
 rtcsync
 cmdport 0
 EOF
+
+	mkdir -p "$tmp"/etc/init.d
+	makefile root:root 0755 "$tmp"/etc/init.d/fix_clock <<EOF
+#!/sbin/openrc-run
+
+description="Adjust clock with chronyc if current timestamp is before build date of rootfs"
+
+attempt_clock_sync() {
+        timeout \$1 sh -c 'while (touch /tmp/ts && test /etc/init.d/fix_clock -nt /tmp/ts); do echo "Attempting to adjust clock."; chronyc "burst 3/3" && sleep 10 && chronyc makestep; done'
+	rm -f /tmp/ts
 }
+
+depend() {
+	need net
+	use dns
+}
+
+start() {
+	ebegin "Check if chronyc is present"
+	if ! command -v chronyc > /dev/null; then
+		eend 1 "chronyc command is missing"
+		return 1
+	fi
+	eend 0
+
+	ebegin "Adjusting clock"
+	attempt_clock_sync 40
+	eend \$?
+}
+EOF
+
+	# rc_add fix_clock boot
+}
+
 
 # use $HL_WIFI_SSID and $HL_WIFI_PSK to create /etc/wpa_supplicant/wpa_supplicant.conf
 configure_wifi() {

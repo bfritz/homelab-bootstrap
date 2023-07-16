@@ -89,6 +89,7 @@ EOF
 	add_vlan_interface 118 172.22.18 ; add_vlan_dns_and_dhcp 118 172.22.18 k8s  0
 }
 
+# Most targets lack real-time clocks, so force clock reset after boot when time is obviously wrong.
 configure_chrony_as_server() {
 	[ -d "$tmp"/etc/chrony ] || mkdir --mode=0755 "$tmp"/etc/chrony
 	makefile root:root 0644 "$tmp"/etc/chrony/chrony.conf <<EOF
@@ -103,6 +104,38 @@ cmdport 0
 # run ntp server for internal networks
 allow 172.22.0.0/19
 EOF
+
+	mkdir -p "$tmp"/etc/init.d
+	makefile root:root 0755 "$tmp"/etc/init.d/fix_clock <<EOF
+#!/sbin/openrc-run
+
+description="Adjust clock with chronyc if current timestamp is before build date of rootfs"
+
+attempt_clock_sync() {
+        timeout \$1 sh -c 'while (touch /tmp/ts && test /etc/init.d/fix_clock -nt /tmp/ts); do echo "Attempting to adjust clock."; chronyc "burst 3/3" && sleep 10 && chronyc makestep; sleep 1; done'
+	rm -f /tmp/ts
+}
+
+depend() {
+	need net
+	use dns
+}
+
+start() {
+	ebegin "Check if chronyc is present"
+	if ! command -v chronyc > /dev/null; then
+		eend 1 "chronyc command is missing"
+		return 1
+	fi
+	eend 0
+
+	ebegin "Adjusting clock"
+	attempt_clock_sync 40
+	eend \$?
+}
+EOF
+
+        # rc_add fix_clock boot
 }
 
 configure_wireguard() {
