@@ -166,17 +166,16 @@ add_route() {
 	local vlan_id="\$2"
 	local source_ip="\$3"
 
-	grep -q "\$table_name" /etc/iproute2/rt_tables || echo "\$vlan_id \$table_name" >> /etc/iproute2/rt_tables
-	ip -4 rule add iif "eth0.\$vlan_id" table "\$table_name"
-	ip -4 route add default via "\$source_ip" dev wg0 table "\$table_name"
+	ip -4 rule add iif "eth0.\$vlan_id" table "\$vlan_id"
+	ip -4 route add default via "\$source_ip" dev wg0 table "\$vlan_id"
 }
 
 del_route() {
 	local table_name="\$1"
 	local vlan_id="\$2"
 
-	ip -4 route flush table "\$table_name" || true
-	ip -4 rule del iif "eth0.\$vlan_id" table "\$table_name" || true
+	ip -4 route flush table "\$vlan_id" || true
+	ip -4 rule del iif "eth0.\$vlan_id" table "\$vlan_id" || true
 }
 
 case "\$1" in
