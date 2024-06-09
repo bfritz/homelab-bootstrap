@@ -76,7 +76,7 @@ chroot: clone-aci populate-shared
 		-d $(abspath $(WORK_DIR))/$(ARCH) \
 		-i $(abspath $(WORK_DIR))/shared \
 		-k "ARCH CI QEMU_EMULATOR HL_.*" \
-		-p "abuild apk-tools alpine-conf busybox fakeroot sudo squashfs-tools mkinitfs grub-efi mtools xorriso"
+		-p "abuild apk-tools alpine-conf busybox curl fakeroot sudo squashfs-tools mkinitfs grub-efi mtools xorriso"
 
 build-user: chroot
 	# add non-root user to build images
