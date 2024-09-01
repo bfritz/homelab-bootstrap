@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-RT_LISTENER_URL="https://fewerhassles.com/misc/$ARCH/ruuvitag-listener"
+RT_LISTENER_URL="https://fewerhassles.com/misc/${ARCH:-armhf}/ruuvitag-listener"
 
 hostname="$1"
 
