@@ -54,8 +54,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - image: k0s-worker
-            platform: linux/amd64
+# The k0s-worker build on amd64 is currently failing with:
+#
+#     Unable to find image 'alpine-builder:3.21-latest' locally
+#     docker: Error response from daemon: pull access denied for alpine-builder, repository does not exist or may require 'docker login': denied: requested access to the resource is denied.
+#     See 'docker run --help'.
+#     error: Recipe `abuild-keygen` failed on line 74 with exit code 125
+#     Error: Process completed with exit code 125.
+#          - image: k0s-worker
+#            platform: linux/amd64
           - image: rpi-basic
             platform: linux/arm/v6
           - image: rpi-basic
