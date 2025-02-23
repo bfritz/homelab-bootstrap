@@ -1,0 +1,33 @@
+ARG ALPINE_VERSION=0
+FROM alpine:${ALPINE_VERSION}
+
+ARG BUILD_USER
+ENV BUILD_USER=${BUILD_USER}
+
+ARG BUILD_USER_UID=1000
+ENV BUILD_USER_UID=${BUILD_USER_UID}
+
+RUN apk add --no-cache \
+    abuild \
+    apk-tools \
+    alpine-conf \
+    busybox \
+    curl \
+    fakeroot \
+    sudo \
+    squashfs-tools \
+    mkinitfs \
+    grub-efi \
+    mtools \
+    xorriso
+
+RUN adduser -u $BUILD_USER_UID -G users -s /bin/sh -D $BUILD_USER \
+    && adduser $BUILD_USER abuild \
+    && echo "$BUILD_USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/wheel \
+    && chmod 640 /etc/sudoers.d/wheel
+
+# Without an `apk update` here, build of Raspberry Pi images will fail with
+# `gzip: invalid magic` when running an `apk fetch` for `rbi_blobs`.
+RUN apk update
+
+USER ${BUILD_USER}:users

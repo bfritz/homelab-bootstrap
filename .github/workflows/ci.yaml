@@ -7,47 +7,99 @@ on:
 
 jobs:
   test-scripts:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: extractions/setup-just@v2
 
       - name: install linters
         run: sudo apt-get install -y shellcheck
 
       - name: lint
-        run: make lint
+        run: just lint
 
       - name: test
-        run: make test
+        run: just test
 
-  build-images:
-    needs: test-scripts
-    runs-on: ubuntu-20.04
+  build-image-build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: extractions/setup-just@v2
+
+      - name: setup qemu
+        uses: docker/setup-qemu-action@v3
+
+      - name: setup docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: build multi-platform alpine-build image
+        run: |
+          just build-image-build --build-arg BUILD_USER_UID=$(id -u) --platform linux/amd64  -o type=docker,dest=- > /tmp/builder-linux_amd64.tar
+          just build-image-build --build-arg BUILD_USER_UID=$(id -u) --platform linux/arm64  -o type=docker,dest=- > /tmp/builder-linux_arm64.tar
+          just build-image-build --build-arg BUILD_USER_UID=$(id -u) --platform linux/arm/v6 -o type=docker,dest=- > /tmp/builder-linux_arm_v6.tar
+
+      - name: upload multi-platform alpine-build image
+        uses: actions/upload-artifact@v4
+        with:
+          name: builder
+          path: /tmp/builder-*.tar
+
+  image-build:
+    needs: [test-scripts, build-image-build]
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        image:
-          - k0s-worker-x86_64
-          - rpi-basic-armhf
-          - rpi-basic-aarch64
-          - rpi-firewall-aarch64
-          - rpi-k0s-controller-aarch64
-          - rpi-ruuvi-armhf
-          - rpi-snapcast-client-armhf
+        include:
+          - image: k0s-worker
+            platform: linux/amd64
+          - image: rpi-basic
+            platform: linux/arm/v6
+          - image: rpi-basic
+            platform: linux/arm64
+          - image: rpi-firewall
+            platform: linux/arm64
+          - image: rpi-k0s-controller
+            platform: linux/arm64
+          - image: rpi-ruuvi
+            platform: linux/arm/v6
+          - image: rpi-snapcast-client
+            platform: linux/arm/v6
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: extractions/setup-just@v2
+
+      - name: setup qemu
+        uses: docker/setup-qemu-action@v3
+
+      - name: download alpine-build image
+        uses: actions/download-artifact@v4
+        with:
+          name: builder
+          path: /tmp
+
+      - name: load alpine-build image
+        run: |
+          cat /tmp/builder-linux_amd64.tar  | docker load
+          cat /tmp/builder-linux_arm64.tar  | docker load
+          cat /tmp/builder-linux_arm_v6.tar | docker load
 
       - name: build ${{ matrix.image }}
         env:
           # from `wpa_passphrase test_essid supersecret`
           HL_WIFI_SSID: "test_essid"
           HL_WIFI_PSK: "40faa8d23b3cf02b10e0f06cd69e179dfad59db25761909c3ecfdaa49bad53d0"
-        run: make ${{ matrix.image }}
+        run: |
+          just aports-refresh
+          just abuild-keygen --platform ${{ matrix.platform }}
+          just build ${{ matrix.image }} ${{ matrix.platform }}
 
-      - name: list-images-content
-        run: make list-images-content
+#      - name: list-images-content
+#        run: make list-images-content
 
   # The bors bot should only merge if the full matrix of images build successfully.
   # See:
@@ -56,8 +108,8 @@ jobs:
   # * https://github.com/rust-lang/crater/blob/9ab6f9697c901c4a44025cf0a39b73ad5b37d198/.github/workflows/bors.yml#L125-L149
   end-success:
     name: bors build finished
-    needs: build-images
-    runs-on: ubuntu-20.04
+    needs: image-build
+    runs-on: ubuntu-24.04
     steps:
       - name: mark as success
         if: github.event_name == 'push' && success()
