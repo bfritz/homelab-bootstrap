@@ -11,6 +11,8 @@ configure_installed_packages() {
 		chrony \
 		openssh-server \
 		prometheus-node-exporter \
+		picocom \
+		ser2net \
 		snapcast \
 
 }
@@ -55,6 +57,7 @@ configure_init_scripts() {
 	rc_add sshd default
 	rc_add node-exporter default
 	rc_add snapcast-client default
+	rc_add ser2net default
 }
 
 configure_snapcast() {
@@ -65,6 +68,13 @@ configure_snapcast() {
 snapclient_opts="-h ${HL_SNAPCAST_SERVER:-snapcast-server.local} -p 31704"
 EOF
 }
+
+configure_ser2net() {
+	makefile root:root 0644 "$tmp"/etc/ser2net.conf <<EOF
+3333:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT
+EOF
+}
+
 
 configure_syslog() {
 	mkdir -p "$tmp"/etc/conf.d
@@ -94,6 +104,7 @@ configure_syslog
 add_ssh_key
 configure_init_scripts
 configure_snapcast
+configure_ser2net
 install_overlays
 
 echo "Creating overlay file $hostname.apkovl.tar.gz ..."

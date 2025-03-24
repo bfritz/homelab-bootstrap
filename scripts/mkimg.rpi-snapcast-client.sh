@@ -25,6 +25,7 @@ profile_rpi_snapcast_client() {
 		wireless-tools
 		wpa_supplicant
 		atop
+		ser2net
 		snapcast
 "
 	apkovl="genapkovl-rpi-snapcast-client.sh"
