@@ -21,6 +21,22 @@ RUN apk add --no-cache \
     mtools \
     xorriso
 
+# for python virtualenvs
+RUN apk add --no-cache \
+    python3 \
+    py3-pip
+
+# for home assistant
+RUN apk add --no-cache \
+    git \
+    gcc \
+    g++ \
+    ffmpeg-dev \
+    linux-headers \
+    py3-netifaces \
+    python3-dev \
+    musl-dev
+
 RUN adduser -u $BUILD_USER_UID -G users -s /bin/sh -D $BUILD_USER \
     && adduser $BUILD_USER abuild \
     && echo "$BUILD_USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/wheel \

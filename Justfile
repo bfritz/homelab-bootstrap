@@ -23,6 +23,7 @@ shellspec_tag := "0.28.1"
 
 # Build all Alpine images
 build-all: \
+    (build "homeassistant" "linux/amd64") \
     (build "k0s_worker" "linux/amd64") \
     (build "rpi_basic" "linux/arm/v6") \
     (build "rpi_basic" "linux/arm64") \
