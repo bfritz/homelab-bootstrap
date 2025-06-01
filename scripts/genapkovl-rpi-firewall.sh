@@ -83,6 +83,7 @@ EOF
 	add_vlan_interface 104 172.22.4  ; add_vlan_dns_and_dhcp 104 172.22.4  gwif
 	add_vlan_interface 105 172.22.5  ; add_vlan_dns_and_dhcp 105 172.22.5  vwif
 	add_vlan_interface 106 172.22.6  ; add_vlan_dns_and_dhcp 106 172.22.6  awif 0
+	add_vlan_interface 107 172.22.7  ; add_vlan_dns_and_dhcp 107 172.22.7  ha   0
 	add_vlan_interface 111 172.22.11 ; add_vlan_dns_and_dhcp 111 172.22.11 ata  0
 	add_vlan_interface 112 172.22.12 ; add_vlan_dns_and_dhcp 112 172.22.12 voip 0
 	add_vlan_interface 113 172.22.13 ; add_vlan_dns_and_dhcp 113 172.22.13 mgmt 0
