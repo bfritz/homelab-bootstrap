@@ -68,28 +68,72 @@ configure_init_scripts() {
 }
 
 _ha_install_in_venv() {
+	local version="$1"
+
 	mkdir -p "$tmp"/srv
-	# the --system-site-packages is so py3-netifaces is used rather than rebuilt (fails to compile)
+	# the --system-site-packages is so py3-netifaces is used and not rebuilt (fails to compile)
 	python -m venv --system-site-packages "$tmp"/srv/homeassistant
+
+	# Download the python package list and constraints
+	mkdir -p "$tmp"/srv/homeassistant/build/homeassistant
+	for F in requirements.txt requirements_all.txt homeassistant/package_constraints.txt; do
+		curl -Lf# -o "$tmp"/srv/homeassistant/build/$F "https://raw.githubusercontent.com/home-assistant/core/refs/tags/$version/$F"
+	done
+
+	# Disable modules that fail to compile in our build environment.
+	sed -i "s,^\(aiokafka\),# \1," "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(av\),# \1," "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(deebot-client\),# \1," "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(pytradfri\),# \1," "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(pyads\),# \1," "$tmp"/srv/homeassistant/build/requirements*.txt
+
+	# Disable unused modules that bloat ramdisk.
+	sed -i "s,^\(aioaquacell=\),# \1,"     "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(aiobotocore\),# \1,"      "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(apprise\),# \1,"          "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(azure\),# \1,"            "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(boto3\),# \1,"            "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(botocore\),# \1,"         "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(env-canada\),# \1,"       "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(gassist-text\),# \1,"     "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(gcal-sync\),# \1,"        "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(google\),# \1,"           "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(googleapiclient\),# \1,"  "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(gspread\),# \1,"          "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(gTTS\),# \1,"             "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(insteon-frontend\),# \1," "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(knx-frontend\),# \1,"     "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(nice-go\),# \1,"          "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(noaa-coops\),# \1,"       "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(openai\),# \1,"           "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(pandas\),# \1,"           "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(pyezviz\),# \1,"          "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(pyinsteon\),# \1,"        "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(pypypasser\),# \1,"       "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(selenium\),# \1,"         "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(starlink\),# \1,"         "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(Tami4EdgeAPI\),# \1,"     "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(telegram\),# \1,"         "$tmp"/srv/homeassistant/build/requirements*.txt
+	sed -i "s,^\(twilio\),# \1,"           "$tmp"/srv/homeassistant/build/requirements*.txt
+
+	# Upgrade pip and then install homeassistant and its packages.
+	"$tmp"/srv/homeassistant/bin/python -m pip install --upgrade pip
 	"$tmp"/srv/homeassistant/bin/pip install \
-		wheel \
-		numpy \
-		zlib-ng \
-		homeassistant==2025.1.4 \
-		pymicro-vad==1.0.1 \
-		pyspeex-noise==1.0.2 \
-		aiodiscover==2.1.0 \
-		mutagen==1.47.0 \
-		hassil==2.1.0 \
-		go2rtc-client==0.1.2
-	sed -i "s,^#!/tmp/tmp.[a-zA-Z]\+/srv,#!/srv," "$tmp"/srv/homeassistant/bin/[a-z]*
+		--constraint  "$tmp"/srv/homeassistant/build/homeassistant/package_constraints.txt \
+		--requirement "$tmp"/srv/homeassistant/build/requirements.txt \
+		--requirement "$tmp"/srv/homeassistant/build/requirements_all.txt \
+		homeassistant=="$version"
 
+	# Drop the "$tmp" prefix from scripts in the virutalenv.
+	sed -i "s,/tmp/tmp.[a-zA-Z]\+/srv,/srv," "$tmp"/srv/homeassistant/bin/[a-z]*
 
-	# Example to include custome integration
+	# No custom components currently, but here's how we would install them if needed...
+	mkdir -p "$tmp"/srv/homeassistant/custom_components/
+
+	# Example to include custom integration
 	# git -C /tmp clone https://github.com/a/b
 	# git -C /tmp/b checkout aabbcc0123
-	mkdir -p "$tmp"/srv/homeassistant/custom_components/
-	cp -r /tmp/b/custom_components/whatever "$tmp"/srv/homeassistant/custom_components/
+	# cp -r /tmp/b/custom_components/whatever "$tmp"/srv/homeassistant/custom_components/
 	# The custom components here will need to be copied into /data/homeassistant/custom_components/
 	# on the persistent media before they are enabled.
 
@@ -104,7 +148,8 @@ _ha_add_init_script() {
 # Path to the configuration directory.
 #cfdir="/data/homeassistant"
 
-homeassistant_args="--skip-pip-packages av"
+# homeassistant_args="--skip-pip-packages av"
+homeassistant_args="--skip-pip"
 
 # The user (and group) to run homeassistant (hass) as.
 #command_user="homeassistant"
@@ -149,7 +194,7 @@ EOF
 }
 
 configure_homeassistant() {
-	_ha_install_in_venv
+	_ha_install_in_venv 2025.1.4
 	_ha_add_init_script
 
 	rc_add bluetooth default
