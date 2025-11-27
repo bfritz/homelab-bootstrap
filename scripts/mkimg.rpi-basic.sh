@@ -22,6 +22,7 @@ profile_rpi_basic() {
 	    openssh-server
 	    prometheus-node-exporter
 	    atop
+	    btop
 "
 	apkovl="genapkovl-rpi-basic.sh"
 }

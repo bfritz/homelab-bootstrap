@@ -23,6 +23,7 @@ profile_rpi_ruuvi() {
 		wireless-tools
 		wpa_supplicant
 		atop
+		btop
 		bluez
 		tmux
 		pv

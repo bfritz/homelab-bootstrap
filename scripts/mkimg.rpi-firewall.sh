@@ -30,6 +30,7 @@ profile_rpi_firewall() {
 		wireguard-tools-wg
 		gomplate
 		atop
+		btop
 "
 	apkovl="genapkovl-rpi-firewall.sh"
 }

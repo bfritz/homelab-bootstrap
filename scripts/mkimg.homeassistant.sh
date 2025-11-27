@@ -10,6 +10,7 @@ profile_homeassistant() {
 		wireless-tools
 		wpa_supplicant
 		atop
+		btop
 		bluez
 		dbus
 		git

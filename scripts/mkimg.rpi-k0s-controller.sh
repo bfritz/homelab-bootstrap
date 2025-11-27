@@ -28,6 +28,7 @@ profile_rpi_k0s_controller() {
         iptables
         nfs-utils
         atop
+        btop
         prometheus-node-exporter
     "
     apkovl="genapkovl-k0s-node.sh"

@@ -25,6 +25,7 @@ profile_rpi_snapcast_client() {
 		wireless-tools
 		wpa_supplicant
 		atop
+		btop
 		ser2net
 		snapcast
 "
