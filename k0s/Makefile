@@ -4,8 +4,8 @@ ARGOCD_CLI_URL := https://github.com/argoproj/argo-cd/releases/download/v$(ARGOC
 CILIUM_CLI_VER := 0.12.12
 CILIUM_CLI_URL := https://github.com/cilium/cilium-cli/releases/download/v$(CILIUM_CLI_VER)/cilium-linux-amd64.tar.gz
 
-K0SCTL_VER := 0.15.0
-K0SCTL_URL := https://github.com/k0sproject/k0sctl/releases/download/v$(K0SCTL_VER)/k0sctl-linux-x64
+K0SCTL_VER := 0.28.0
+K0SCTL_URL := https://github.com/k0sproject/k0sctl/releases/download/v$(K0SCTL_VER)/k0sctl-linux-amd64
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
