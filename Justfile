@@ -1,6 +1,6 @@
 platform := 'linux/amd64'
 
-alpine_version := "3.22"
+alpine_version := "3.23"
 alpine_builder_tag := "alpine-builder:" + alpine_version + "-latest"
 alpine_mirror := "http://dl-cdn.alpinelinux.org/alpine/"
 alpine_main_repo := alpine_mirror + "v" + alpine_version + "/main"
