@@ -68,7 +68,7 @@ configure_init_scripts() {
 }
 
 _ha_install_in_venv() {
-	local version="$1"
+	version="$1"
 
 	mkdir -p "$tmp"/srv
 	# the --system-site-packages is so py3-netifaces is used and not rebuilt (fails to compile)
