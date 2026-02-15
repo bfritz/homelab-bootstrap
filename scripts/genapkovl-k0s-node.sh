@@ -17,7 +17,7 @@ k0s_arch() {
 		linux/amd64) echo "amd64" ;;
 		linux/arm64) echo "arm64" ;;
 		linux/arm/v6) echo "arm" ;;
-		?*)  _err "Unspported k0s platform: $PLATFORM" ;;
+		?*)  _err "Unsupported k0s platform: $PLATFORM" ;;
 	esac
 }
 
