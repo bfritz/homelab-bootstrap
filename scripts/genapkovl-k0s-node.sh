@@ -13,11 +13,11 @@ is_controller() {
 }
 
 k0s_arch() {
-	case "$ARCH" in
-		x86_64) echo "amd64" ;;
-		aarch64) echo "arm64" ;;
-		armv7) echo "arm" ;;
-		?*)  _err "Unsupported k0s architecture: $ARCH" ;;
+	case "$PLATFORM" in
+		linux/amd64) echo "amd64" ;;
+		linux/arm64) echo "arm64" ;;
+		linux/arm/v6) echo "arm" ;;
+		?*)  _err "Unspported k0s platform: $PLATFORM" ;;
 	esac
 }
 
@@ -38,6 +38,8 @@ configure_installed_packages() {
 
 	if is_controller; then
 		apk_add prometheus-node-exporter
+	else
+		apk_add findmnt
 	fi
 }
 
@@ -84,6 +86,8 @@ configure_init_scripts() {
 
 	if is_controller; then
 		rc_add node-exporter default
+	else
+		rc_add crond default
 	fi
 }
 
@@ -91,7 +95,7 @@ add_prepare_for_k8s_init_script() {
 	if is_controller; then
 		worker_only_calls=""
 	else
-		worker_only_calls="$(printf "share_sys\n\tsetup_for_cilium")"
+		worker_only_calls="$(printf "share_mounts")"
 	fi
 
 	mkdir -p "$tmp"/etc/init.d
@@ -99,6 +103,10 @@ add_prepare_for_k8s_init_script() {
 #!/sbin/openrc-run
 
 description="Prepare host for running as kubernetes worker or controller node"
+
+depend() {
+	need dev localmount
+}
 
 mount_k8s_data_partitions() {
 	ebegin "Mounting k8s data partitions"
@@ -123,21 +131,30 @@ mount_k8s_data_partitions() {
 	eend 0
 }
 
-share_sys() {
-	einfo "Sharing /sys with containers for node-exporter"
-	mount --make-shared /
-	mount --make-shared /sys
-}
+share_mounts() {
+	einfo "Adding crontab to make sure mounts are shared correctly"
 
-setup_for_cilium() {
-	einfo "Mounting /sys/fs/bpf and sharing with containers for Cilium"
-	mount bpffs -t bpf /sys/fs/bpf
-	mount --make-shared /sys/fs/bpf
+	cat <<EOS > /usr/local/bin/share_mounts.sh
+#!/bin/sh
 
-	einfo "Creating /run/cilium/cgroupv2 and sharing with containers for Cilium"
-	mkdir -p /run/cilium/cgroupv2
-	mount -t cgroup2 none /run/cilium/cgroupv2
-	mount --make-shared /run/cilium/cgroupv2
+# Share / and /sys so node-exporter in k8s can access them.
+# Share /sys/fs/bpf and /run/cilium/cgroupv2 so Cilium pods can access them.
+
+for mnt in / /sys /sys/fs/bpf /run/cilium/cgroupv2; do
+	if [ -e "\\\$mnt" ]; then
+		prop="\\\$(findmnt --noheadings --output PROPAGATION \\\$mnt)"
+		if [ "\\\$prop" != "shared"  ]; then
+			mount --make-shared "\\\$mnt"
+		fi
+	fi
+done
+EOS
+
+	chmod 0755 /usr/local/bin/share_mounts.sh
+
+	if ! grep share_mounts /etc/crontabs/root; then
+		echo "*/3	*	*	*	*	/usr/local/bin/share_mounts.sh" >> /etc/crontabs/root
+	fi
 }
 
 start() {
