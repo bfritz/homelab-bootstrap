@@ -58,12 +58,12 @@ spec:
             - name: z-argo-cd
               namespace: argocd
               chartname: argo-repo/argo-cd
-              version: "8.2.7"
+              version: "9.0.6"
               values: |
                 fullnameOverride: argocd
                 global:
                   image:
-                    tag: "v3.0.12"
+                    tag: "v3.1.12"
                 dex:
                   enabled: false
                 server:
