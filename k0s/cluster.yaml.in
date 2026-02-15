@@ -46,7 +46,7 @@ spec:
             - name: a-cilium # a- prefix to run first, before argocd which cannot helm install without a CNI plugin
               namespace: kube-system
               chartname: cilium/cilium
-              version: "1.13.18"
+              version: "1.14.19"
               values: |
                 k8sServiceHost: {{ .Env.K0S_CONTROLLER_IP }}
                 k8sServicePort: 6443
